@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { ArrowLeft } from "lucide-react";
@@ -31,7 +32,9 @@ export default function LoginPage() {
             For hub admins and organizers. Attendees sign in from their event's URL.
           </p>
 
-          <LoginForm />
+          <Suspense fallback={<div className="mt-8 h-44 rounded-md bg-ink-50 animate-pulse" />}>
+            <LoginForm />
+          </Suspense>
 
           <p className="mt-6 text-xs text-ink-400 text-center">
             Don't have an account? Organizer accounts are provisioned by the hub admin —{" "}
