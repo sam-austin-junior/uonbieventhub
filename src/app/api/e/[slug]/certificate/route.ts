@@ -50,7 +50,7 @@ export async function GET(req: Request, { params }: { params: { slug: string } }
 
   const safeName = reg.user.name.replace(/[^a-z0-9]+/gi, "-").toLowerCase();
   const safeEvent = event.slug;
-  return new Response(pdf, {
+  return new Response(Buffer.from(pdf), {
     status: 200,
     headers: {
       "Content-Type": "application/pdf",
