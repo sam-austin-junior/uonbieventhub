@@ -73,7 +73,7 @@ export default async function ConnectionsPage({ params }: { params: { slug: stri
             title="No connections yet"
             description="Find people in the attendees directory and send a request."
             action={
-              <Link href={`/e/${event.slug}/attendees`} className="btn-primary">
+              <Link href={`/e/${params.slug}/attendees`} className="btn-primary">
                 Browse attendees
               </Link>
             }
@@ -85,7 +85,7 @@ export default async function ConnectionsPage({ params }: { params: { slug: stri
               return (
                 <Link
                   key={c.id}
-                  href={`/e/${event.slug}/messages?attendeeId=${other.id}`}
+                  href={`/e/${params.slug}/messages?attendeeId=${other.id}`}
                   className="card p-4 flex gap-3 items-center hover:shadow-pop transition-shadow"
                 >
                   <Avatar name={other.name} src={other.avatarUrl} size={48} />

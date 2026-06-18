@@ -77,7 +77,7 @@ export default async function MessagesPage({
               {threadList.map((t) => (
                 <li key={t.otherId}>
                   <Link
-                    href={`/e/${event.slug}/messages?attendeeId=${t.otherId}`}
+                    href={`/e/${params.slug}/messages?attendeeId=${t.otherId}`}
                     className={cn(
                       "flex gap-3 p-3 hover:bg-ink-50",
                       activeId === t.otherId ? "bg-brand-50" : ""

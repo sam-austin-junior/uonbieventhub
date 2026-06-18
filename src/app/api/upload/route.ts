@@ -55,7 +55,8 @@ export async function POST(req: Request) {
   const kind = (KINDS as any)[kindParam] as (typeof KINDS)[keyof typeof KINDS] | undefined;
   if (!kind) return NextResponse.json({ error: "Invalid kind" }, { status: 400 });
   if (!(file instanceof File)) return NextResponse.json({ error: "No file" }, { status: 400 });
-  if (!kind.accept.includes(file.type as any)) {
+  const accepted: readonly string[] = kind.accept;
+  if (!accepted.includes(file.type)) {
     return NextResponse.json(
       { error: `File type ${file.type} not allowed for ${kindParam}` },
       { status: 400 }
