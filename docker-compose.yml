@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: uon-hub-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: uon
+      POSTGRES_PASSWORD: uon_dev_password
+      POSTGRES_DB: uon_event_hub
+    ports:
+      # Host port 5433 → container port 5432.
+      # Using 5433 to avoid conflict with any existing Postgres / Docker container on 5432.
+      - "5433:5432"
+    volumes:
+      - uon_hub_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U uon -d uon_event_hub"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  adminer:
+    image: adminer:latest
+    container_name: uon-hub-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  uon_hub_pgdata:

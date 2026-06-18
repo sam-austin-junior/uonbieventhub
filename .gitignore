@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+.env
+.env.local
+.env*.local
+*.log
+.DS_Store
+.vscode
+.idea
+dist
+build
+prisma/dev.db
+prisma/dev.db-journal
+public/uploads/**/*
+!public/uploads/.gitkeep

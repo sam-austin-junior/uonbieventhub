@@ -1,0 +1,387 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // Required by Supabase: DATABASE_URL points at the pooler (port 6543);
+  // DIRECT_URL points at the direct connection (port 5432) for migrations.
+  // Locally this can be omitted — Prisma falls back to url.
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ATTENDEE
+  ORGANIZER
+  ADMIN
+  SUPERADMIN
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum SessionFormat {
+  IN_PERSON
+  VIRTUAL
+  HYBRID
+  ON_DEMAND
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+enum AttendeeMode {
+  OPEN
+  INVITE_ONLY
+}
+
+enum AnnouncementAudience {
+  ALL_ATTENDEES
+  CHECKED_IN
+  SPEAKERS
+  EXHIBITORS
+}
+
+model PlatformConfig {
+  id        String   @id @default("singleton")
+  brandName String   @default("UoN Event Hub")
+  fromName  String?
+  fromEmail String?
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  passwordHash    String?
+  name            String
+  role            Role     @default(ATTENDEE)
+  jobTitle        String?
+  organization    String?
+  bio             String?
+  avatarUrl       String?
+  faculty         String?
+  studentId       String?
+  phone           String?
+  showInDirectory Boolean  @default(true)
+  allowConnectionRequests Boolean @default(true)
+  language        String   @default("en")
+  timezone        String   @default("Africa/Nairobi")
+
+  activatedAt     DateTime?
+  pendingCode     String?
+  pendingCodeExpiresAt DateTime?
+  passwordResetToken String? @unique
+  passwordResetExpiresAt DateTime?
+
+  expiresAt       DateTime?
+  suspendedAt     DateTime?
+
+  notifySessionEmail      Boolean @default(true)
+  notifySessionInApp      Boolean @default(true)
+  notifyMessagesEmail     Boolean @default(true)
+  notifyMessagesInApp     Boolean @default(true)
+  notifyConnectionsEmail  Boolean @default(true)
+  notifyConnectionsInApp  Boolean @default(true)
+  notifyDiscussionsEmail  Boolean @default(false)
+  notifyDiscussionsInApp  Boolean @default(true)
+  notifyEventUpdatesEmail Boolean @default(true)
+  notifyEventUpdatesInApp Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizedEvents      Event[]               @relation("EventOrganizer")
+  registrations        Registration[]
+  sessionRegistrations SessionRegistration[]
+  speakerProfile       Speaker?
+  postedDiscussions    Discussion[]          @relation("DiscussionAuthor")
+  discussionReplies    DiscussionReply[]
+  sentConnections      Connection[]          @relation("ConnectionRequester")
+  receivedConnections  Connection[]          @relation("ConnectionReceiver")
+  sentMessages         Message[]             @relation("MessageSender")
+  receivedMessages     Message[]             @relation("MessageReceiver")
+  notifications        Notification[]
+  chatMessages         ChatMessage[]
+  authoredAnnouncements Announcement[]       @relation("AnnouncementAuthor")
+}
+
+model Event {
+  id           String       @id @default(cuid())
+  slug         String       @unique
+  name         String
+  tagline      String?
+  description  String
+  startDate    DateTime
+  endDate      DateTime
+  timezone     String       @default("Africa/Nairobi")
+  venue        String?
+  coverImage   String?
+  logoUrl      String?
+  status       EventStatus  @default(PUBLISHED)
+  attendeeMode AttendeeMode @default(INVITE_ONLY)
+  organizerId  String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  organizer     User                @relation("EventOrganizer", fields: [organizerId], references: [id])
+  sessions      Session[]
+  speakers      Speaker[]
+  exhibitors    Exhibitor[]
+  pages         CustomPage[]
+  registrations Registration[]
+  discussions   Discussion[]
+  notifications Notification[]
+  knowledgeBase EventKnowledgeBase?
+  chatMessages  ChatMessage[]
+  invites       AttendeeInvite[]
+  announcements Announcement[]
+}
+
+model Session {
+  id          String        @id @default(cuid())
+  eventId     String
+  title       String
+  description String
+  startTime   DateTime
+  endTime     DateTime
+  location    String?
+  format      SessionFormat @default(IN_PERSON)
+  capacity    Int?
+  videoUrl    String?
+  isFeatured  Boolean       @default(false)
+  track       String?
+  createdAt   DateTime      @default(now())
+
+  event         Event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  speakers      SessionSpeaker[]
+  registrations SessionRegistration[]
+
+  @@index([eventId, startTime])
+}
+
+model Speaker {
+  id           String   @id @default(cuid())
+  eventId      String
+  userId       String?  @unique
+  name         String
+  jobTitle     String?
+  organization String?
+  bio          String?
+  photoUrl     String?
+  linkedinUrl  String?
+  twitterUrl   String?
+  isKeynote    Boolean  @default(false)
+
+  event    Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user     User?            @relation(fields: [userId], references: [id])
+  sessions SessionSpeaker[]
+}
+
+model SessionSpeaker {
+  sessionId String
+  speakerId String
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  speaker Speaker @relation(fields: [speakerId], references: [id], onDelete: Cascade)
+
+  @@id([sessionId, speakerId])
+}
+
+model Registration {
+  id           String   @id @default(cuid())
+  eventId      String
+  userId       String
+  registeredAt DateTime @default(now())
+  checkedInAt  DateTime?
+  qrToken      String   @unique @default(cuid())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+}
+
+model SessionRegistration {
+  id           String   @id @default(cuid())
+  sessionId    String
+  userId       String
+  registeredAt DateTime @default(now())
+  checkedInAt  DateTime?
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, userId])
+}
+
+model Exhibitor {
+  id          String  @id @default(cuid())
+  eventId     String
+  name        String
+  tagline     String?
+  description String
+  logoUrl     String?
+  website     String?
+  email       String?
+  boothNumber String?
+  category    String?
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model CustomPage {
+  id        String   @id @default(cuid())
+  eventId   String
+  slug      String
+  title     String
+  body      String
+  order     Int      @default(0)
+  showInNav Boolean  @default(true)
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, slug])
+}
+
+model Discussion {
+  id        String   @id @default(cuid())
+  eventId   String
+  authorId  String
+  title     String
+  body      String
+  pinned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  event   Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  author  User              @relation("DiscussionAuthor", fields: [authorId], references: [id])
+  replies DiscussionReply[]
+}
+
+model DiscussionReply {
+  id           String   @id @default(cuid())
+  discussionId String
+  authorId     String
+  body         String
+  createdAt    DateTime @default(now())
+
+  discussion Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  author     User       @relation(fields: [authorId], references: [id])
+}
+
+model Connection {
+  id          String           @id @default(cuid())
+  requesterId String
+  receiverId  String
+  status      ConnectionStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  respondedAt DateTime?
+
+  requester User @relation("ConnectionRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  receiver  User @relation("ConnectionReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, receiverId])
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  body       String
+  sentAt     DateTime @default(now())
+  readAt     DateTime?
+
+  sender   User @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([senderId, receiverId, sentAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  eventId   String?
+  type      String
+  title     String
+  body      String?
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event? @relation(fields: [eventId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+}
+
+model EventKnowledgeBase {
+  id        String   @id @default(cuid())
+  eventId   String   @unique
+  fileName  String
+  fileType  String
+  fileUrl   String?
+  rawText   String
+  charCount Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  eventId   String
+  userId    String
+  role      String
+  content   String
+  createdAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([eventId, userId, createdAt])
+}
+
+model AttendeeInvite {
+  id          String   @id @default(cuid())
+  eventId     String
+  firstName   String
+  lastName    String
+  email       String
+  invitedAt   DateTime @default(now())
+  activatedAt DateTime?
+  emailSentAt DateTime?
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, email])
+}
+
+model Announcement {
+  id             String               @id @default(cuid())
+  eventId        String
+  authorId       String
+  title          String
+  body           String
+  audience       AnnouncementAudience @default(ALL_ATTENDEES)
+  sendEmail      Boolean              @default(true)
+  sendInApp      Boolean              @default(true)
+  sentAt         DateTime?
+  recipientCount Int                  @default(0)
+  emailsSent     Int                  @default(0)
+  emailsFailed   Int                  @default(0)
+  createdAt      DateTime             @default(now())
+
+  event  Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  author User  @relation("AnnouncementAuthor", fields: [authorId], references: [id])
+
+  @@index([eventId, createdAt])
+}
