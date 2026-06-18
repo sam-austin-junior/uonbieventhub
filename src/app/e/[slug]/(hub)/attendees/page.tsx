@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { Avatar } from "@/components/ui/Avatar";
-import { ConnectButton } from "@/components/hub/ConnectButton";
+import { ConnectButton } from "@/components/event/ConnectButton";
 import { Search } from "lucide-react";
 
 export default async function AttendeesPage({
