@@ -19,10 +19,8 @@ import { LogoutButton } from "@/components/LogoutButton";
 
 export function AdminSidebar({
   user,
-  eventId,
 }: {
   user: { name: string; role: string };
-  eventId?: string;
 }) {
   const pathname = usePathname();
   const top = [
@@ -30,14 +28,20 @@ export function AdminSidebar({
     { href: "/admin/events", label: "Events", icon: CalendarRange },
     { href: "/admin/check-in", label: "QR Check-in", icon: QrCode },
   ];
-  const eventScoped = eventId
+  // Derive the *current* event id from the URL so per-event links always
+  // point at the event the user is actually viewing (never some other org's).
+  const currentEventMatch = pathname.match(/^\/admin\/events\/([^/]+)/);
+  const currentEventId =
+    currentEventMatch && currentEventMatch[1] !== "new" ? currentEventMatch[1] : null;
+  const eventScoped = currentEventId
     ? [
-        { href: `/admin/events/${eventId}/sessions`, label: "Sessions", icon: Calendar },
-        { href: `/admin/events/${eventId}/speakers`, label: "Speakers", icon: Mic2 },
-        { href: `/admin/events/${eventId}/attendees`, label: "Attendees", icon: Users },
-        { href: `/admin/events/${eventId}/exhibitors`, label: "Exhibitors", icon: Store },
-        { href: `/admin/events/${eventId}/pages`, label: "Custom Pages", icon: FileText },
-        { href: `/admin/events/${eventId}/announcements`, label: "Announcements", icon: Megaphone },
+        { href: `/admin/events/${currentEventId}`, label: "Overview", icon: LayoutDashboard, exact: true },
+        { href: `/admin/events/${currentEventId}/sessions`, label: "Sessions", icon: Calendar, exact: false },
+        { href: `/admin/events/${currentEventId}/speakers`, label: "Speakers", icon: Mic2, exact: false },
+        { href: `/admin/events/${currentEventId}/attendees`, label: "Attendees", icon: Users, exact: false },
+        { href: `/admin/events/${currentEventId}/exhibitors`, label: "Exhibitors", icon: Store, exact: false },
+        { href: `/admin/events/${currentEventId}/pages`, label: "Custom Pages", icon: FileText, exact: false },
+        { href: `/admin/events/${currentEventId}/announcements`, label: "Announcements", icon: Megaphone, exact: false },
       ]
     : [];
 
@@ -77,7 +81,7 @@ export function AdminSidebar({
               <NavItem
                 key={i.href}
                 href={i.href}
-                active={isActive(i.href)}
+                active={isActive(i.href, i.exact)}
                 icon={<i.icon className="h-4 w-4" />}
                 label={i.label}
               />
