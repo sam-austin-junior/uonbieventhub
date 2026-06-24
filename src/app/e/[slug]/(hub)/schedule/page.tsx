@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { formatTime, formatDay } from "@/lib/utils";
-import { Clock, MapPin, QrCode, Award, Download } from "lucide-react";
+import { Clock, MapPin, QrCode, Award, Download, CalendarPlus } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function MySchedulePage({ params }: { params: { slug: string } }) {
@@ -95,6 +95,29 @@ export default async function MySchedulePage({ params }: { params: { slug: strin
         </div>
 
         <aside className="space-y-6">
+          <div className="card p-5">
+            <div className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wide text-ink-500 font-semibold mb-3">
+              <CalendarPlus className="h-3.5 w-3.5 text-accent" /> Add to your calendar
+            </div>
+            <p className="text-xs text-ink-500 mb-3">
+              Imports as a subscribable feed into Google, Outlook or Apple Calendar.
+            </p>
+            <div className="flex flex-col gap-2">
+              <a
+                href={`/api/e/${event.slug}/calendar?scope=mine`}
+                className="btn-secondary text-xs justify-center"
+              >
+                <Download className="h-3.5 w-3.5" /> My schedule (.ics)
+              </a>
+              <a
+                href={`/api/e/${event.slug}/calendar`}
+                className="btn-ghost text-xs justify-center"
+              >
+                <Download className="h-3.5 w-3.5" /> All sessions (.ics)
+              </a>
+            </div>
+          </div>
+
           {qrDataUrl ? (
             <div className="card p-5 text-center">
               <div className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wide text-ink-500 font-semibold">

@@ -12,6 +12,7 @@ import {
   QrCode,
   Megaphone,
   ArrowLeftRight,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
@@ -27,6 +28,7 @@ export function AdminSidebar({
     { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
     { href: "/admin/events", label: "Events", icon: CalendarRange },
     { href: "/admin/check-in", label: "QR Check-in", icon: QrCode },
+    { href: "/admin/security", label: "Security (2FA)", icon: ShieldCheck },
   ];
   // Derive the *current* event id from the URL so per-event links always
   // point at the event the user is actually viewing (never some other org's).

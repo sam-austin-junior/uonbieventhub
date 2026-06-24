@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { sendEmail, emailTemplate, appUrl, isEmailConfigured } from "@/lib/email";
+import { writeAudit } from "@/lib/audit";
 
 const schema = z.object({
   name: z.string().min(2),
@@ -28,7 +29,8 @@ function randomPassword() {
 }
 
 export async function POST(req: Request) {
-  if (!(await assertHubAdmin())) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const session = await assertHubAdmin();
+  if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const json = await req.json().catch(() => null);
   const parsed = schema.safeParse(json);
   if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
@@ -81,6 +83,15 @@ export async function POST(req: Request) {
       emailSent = false;
     }
   }
+
+  await writeAudit({
+    session,
+    action: "organizer.create",
+    targetType: "user",
+    targetId: user.id,
+    summary: `Created organizer ${user.name} <${user.email}>${organization ? ` for ${organization}` : ""}`,
+    metadata: { validityDays, organization, emailSent },
+  });
 
   return NextResponse.json({
     organizer: user,

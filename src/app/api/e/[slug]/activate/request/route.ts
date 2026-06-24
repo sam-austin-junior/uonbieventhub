@@ -3,6 +3,7 @@ import { z } from "zod";
 import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { sendEmail, emailTemplate, isEmailConfigured } from "@/lib/email";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
 
 const schema = z.object({
   firstName: z.string().min(1),
@@ -28,6 +29,24 @@ export async function POST(req: Request, { params }: { params: { slug: string } 
   }
   const { firstName, lastName, email } = parsed.data;
   const lower = email.toLowerCase();
+
+  // Throttle: 5 code requests per (ip, email) per 10 minutes.
+  const ip = clientIp(req);
+  const limited = rateLimit(`activate:${ip}:${lower}`, {
+    limit: 5,
+    windowMs: 10 * 60 * 1000,
+  });
+  if (!limited.ok) {
+    return NextResponse.json(
+      {
+        error: `Too many attempts. Try again in ${limited.retryAfterSeconds} seconds.`,
+      },
+      {
+        status: 429,
+        headers: { "Retry-After": String(limited.retryAfterSeconds) },
+      }
+    );
+  }
 
   const event = await prisma.event.findUnique({ where: { slug: params.slug } });
   if (!event) return NextResponse.json({ error: "Event not found" }, { status: 404 });

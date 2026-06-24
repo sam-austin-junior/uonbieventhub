@@ -58,7 +58,7 @@ export function LoginForm() {
       <div>
         <div className="flex items-center justify-between mb-1">
           <label className="label !mb-0">Password</label>
-          <a href="#" className="text-xs text-brand-700 hover:underline">
+          <a href="/forgot" className="text-xs text-brand-700 hover:underline">
             Forgot password?
           </a>
         </div>

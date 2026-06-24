@@ -15,5 +15,11 @@
     "src/app/api/admin/events/[eventId]/announcements/route.ts": {
       "maxDuration": 60
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/cleanup",
+      "schedule": "0 3 * * *"
+    }
+  ]
 }

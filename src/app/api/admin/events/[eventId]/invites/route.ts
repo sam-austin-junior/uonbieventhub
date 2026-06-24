@@ -71,9 +71,18 @@ export async function DELETE(req: Request, { params }: { params: { eventId: stri
   if (!(await assertStaff())) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const url = new URL(req.url);
   const id = url.searchParams.get("id");
-  if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+  const scope = url.searchParams.get("scope");
+
+  if (scope === "unactivated") {
+    const { count } = await prisma.attendeeInvite.deleteMany({
+      where: { eventId: params.eventId, activatedAt: null },
+    });
+    return NextResponse.json({ ok: true, deleted: count });
+  }
+
+  if (!id) return NextResponse.json({ error: "Missing id or scope" }, { status: 400 });
   await prisma.attendeeInvite.delete({ where: { id } });
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, deleted: 1 });
 }
 
 async function sendInviteEmail({

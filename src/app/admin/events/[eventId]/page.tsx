@@ -5,6 +5,7 @@ import { isChatbotEnabled } from "@/lib/llm";
 import { requireStaff, assertOwnsEvent } from "@/lib/admin-scope";
 import { KnowledgeUpload } from "./KnowledgeUpload";
 import { ShareEventUrl } from "./ShareEventUrl";
+import { CloneEventButton } from "./CloneEventButton";
 import { Calendar, Mic2, Users, Store, FileText, Megaphone, UserPlus, Award } from "lucide-react";
 
 export default async function AdminEventDetail({ params }: { params: { eventId: string } }) {
@@ -63,6 +64,12 @@ export default async function AdminEventDetail({ params }: { params: { eventId: 
             {formatDate(event.startDate)} – {formatDate(event.endDate)} · {event.venue ?? "Venue TBD"}
           </p>
         </div>
+        <CloneEventButton
+          eventId={event.id}
+          sourceName={event.name}
+          sourceStart={event.startDate.toISOString()}
+          sourceEnd={event.endDate.toISOString()}
+        />
       </header>
 
       <ShareEventUrl slug={event.slug} />

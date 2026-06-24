@@ -12,6 +12,7 @@ import {
   Settings,
   Shield,
   ArrowLeftRight,
+  Activity,
 } from "lucide-react";
 
 export function HubAdminSidebar({ user }: { user: { name: string; role: string } }) {
@@ -21,6 +22,7 @@ export function HubAdminSidebar({ user }: { user: { name: string; role: string }
     { href: "/hub-admin/organizers", label: "Organizers", icon: UserCog },
     { href: "/hub-admin/events", label: "All events", icon: CalendarRange },
     { href: "/hub-admin/users", label: "All users", icon: Users },
+    { href: "/hub-admin/audit", label: "Audit log", icon: Activity },
     { href: "/hub-admin/settings", label: "Platform settings", icon: Settings },
   ];
 

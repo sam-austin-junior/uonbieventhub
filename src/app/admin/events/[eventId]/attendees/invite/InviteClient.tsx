@@ -83,10 +83,20 @@ export function InviteClient({ eventId, invites }: { eventId: string; invites: I
     if (res.ok) startTransition(() => router.refresh());
   }
 
+  async function deleteUnactivated() {
+    const pending = invites.filter((i) => !i.activatedAt).length;
+    if (pending === 0) return;
+    if (!confirm(`Remove all ${pending} unactivated invite${pending === 1 ? "" : "s"}? Activated accounts are untouched.`)) return;
+    const res = await fetch(`/api/admin/events/${eventId}/invites?scope=unactivated`, { method: "DELETE" });
+    if (res.ok) startTransition(() => router.refresh());
+  }
+
   async function resendOne(inv: Invite) {
     const res = await fetch(`/api/admin/events/${eventId}/invites/${inv.id}/resend`, { method: "POST" });
     if (res.ok) startTransition(() => router.refresh());
   }
+
+  const unactivatedCount = invites.filter((i) => !i.activatedAt).length;
 
   return (
     <div className="space-y-6">
@@ -150,6 +160,20 @@ export function InviteClient({ eventId, invites }: { eventId: string; invites: I
           </button>
         </div>
       </form>
+
+      {unactivatedCount > 0 ? (
+        <div className="flex items-center justify-between flex-wrap gap-2 px-5 py-3 rounded-md bg-ink-50 ring-1 ring-ink-100 text-sm">
+          <span className="text-ink-600">
+            <strong>{unactivatedCount}</strong> invite{unactivatedCount === 1 ? "" : "s"} not yet activated.
+          </span>
+          <button
+            onClick={deleteUnactivated}
+            className="text-xs text-red-600 hover:underline inline-flex items-center gap-1"
+          >
+            <Trash2 className="h-3 w-3" /> Remove all unactivated
+          </button>
+        </div>
+      ) : null}
 
       <div className="card overflow-hidden">
         <table className="w-full text-sm">

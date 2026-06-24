@@ -59,31 +59,34 @@ model PlatformConfig {
 }
 
 model User {
-  id              String   @id @default(cuid())
-  email           String   @unique
-  passwordHash    String?
-  name            String
-  role            Role     @default(ATTENDEE)
-  jobTitle        String?
-  organization    String?
-  bio             String?
-  avatarUrl       String?
-  faculty         String?
-  studentId       String?
-  phone           String?
-  showInDirectory Boolean  @default(true)
+  id                      String  @id @default(cuid())
+  email                   String  @unique
+  passwordHash            String?
+  name                    String
+  role                    Role    @default(ATTENDEE)
+  jobTitle                String?
+  organization            String?
+  bio                     String?
+  avatarUrl               String?
+  faculty                 String?
+  studentId               String?
+  phone                   String?
+  showInDirectory         Boolean @default(true)
   allowConnectionRequests Boolean @default(true)
-  language        String   @default("en")
-  timezone        String   @default("Africa/Nairobi")
+  language                String  @default("en")
+  timezone                String  @default("Africa/Nairobi")
 
-  activatedAt     DateTime?
-  pendingCode     String?
-  pendingCodeExpiresAt DateTime?
-  passwordResetToken String? @unique
+  activatedAt            DateTime?
+  pendingCode            String?
+  pendingCodeExpiresAt   DateTime?
+  passwordResetToken     String?   @unique
   passwordResetExpiresAt DateTime?
 
-  expiresAt       DateTime?
-  suspendedAt     DateTime?
+  expiresAt   DateTime?
+  suspendedAt DateTime?
+
+  totpSecret    String?
+  totpEnabledAt DateTime?
 
   notifySessionEmail      Boolean @default(true)
   notifySessionInApp      Boolean @default(true)
@@ -99,19 +102,21 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organizedEvents      Event[]               @relation("EventOrganizer")
-  registrations        Registration[]
-  sessionRegistrations SessionRegistration[]
-  speakerProfile       Speaker?
-  postedDiscussions    Discussion[]          @relation("DiscussionAuthor")
-  discussionReplies    DiscussionReply[]
-  sentConnections      Connection[]          @relation("ConnectionRequester")
-  receivedConnections  Connection[]          @relation("ConnectionReceiver")
-  sentMessages         Message[]             @relation("MessageSender")
-  receivedMessages     Message[]             @relation("MessageReceiver")
-  notifications        Notification[]
-  chatMessages         ChatMessage[]
-  authoredAnnouncements Announcement[]       @relation("AnnouncementAuthor")
+  organizedEvents       Event[]               @relation("EventOrganizer")
+  registrations         Registration[]
+  sessionRegistrations  SessionRegistration[]
+  speakerProfile        Speaker?
+  postedDiscussions     Discussion[]          @relation("DiscussionAuthor")
+  discussionReplies     DiscussionReply[]
+  sentConnections       Connection[]          @relation("ConnectionRequester")
+  receivedConnections   Connection[]          @relation("ConnectionReceiver")
+  sentMessages          Message[]             @relation("MessageSender")
+  receivedMessages      Message[]             @relation("MessageReceiver")
+  notifications         Notification[]
+  chatMessages          ChatMessage[]
+  authoredAnnouncements Announcement[]        @relation("AnnouncementAuthor")
+  auditEntries          AuditLog[]            @relation("AuditActor")
+  surveyResponses       EventSurveyResponse[]
 }
 
 model Event {
@@ -144,6 +149,7 @@ model Event {
   chatMessages  ChatMessage[]
   invites       AttendeeInvite[]
   announcements Announcement[]
+  survey        EventSurvey?
 }
 
 model Session {
@@ -169,9 +175,9 @@ model Session {
 }
 
 model Speaker {
-  id           String   @id @default(cuid())
+  id           String  @id @default(cuid())
   eventId      String
-  userId       String?  @unique
+  userId       String? @unique
   name         String
   jobTitle     String?
   organization String?
@@ -179,7 +185,7 @@ model Speaker {
   photoUrl     String?
   linkedinUrl  String?
   twitterUrl   String?
-  isKeynote    Boolean  @default(false)
+  isKeynote    Boolean @default(false)
 
   event    Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
   user     User?            @relation(fields: [userId], references: [id])
@@ -197,12 +203,12 @@ model SessionSpeaker {
 }
 
 model Registration {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   eventId      String
   userId       String
-  registeredAt DateTime @default(now())
+  registeredAt DateTime  @default(now())
   checkedInAt  DateTime?
-  qrToken      String   @unique @default(cuid())
+  qrToken      String    @unique @default(cuid())
 
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -211,10 +217,10 @@ model Registration {
 }
 
 model SessionRegistration {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   sessionId    String
   userId       String
-  registeredAt DateTime @default(now())
+  registeredAt DateTime  @default(now())
   checkedInAt  DateTime?
 
   session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
@@ -239,13 +245,13 @@ model Exhibitor {
 }
 
 model CustomPage {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   eventId   String
   slug      String
   title     String
   body      String
-  order     Int      @default(0)
-  showInNav Boolean  @default(true)
+  order     Int     @default(0)
+  showInNav Boolean @default(true)
 
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
@@ -292,11 +298,11 @@ model Connection {
 }
 
 model Message {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   senderId   String
   receiverId String
   body       String
-  sentAt     DateTime @default(now())
+  sentAt     DateTime  @default(now())
   readAt     DateTime?
 
   sender   User @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
@@ -306,7 +312,7 @@ model Message {
 }
 
 model Notification {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
   eventId   String?
   type      String
@@ -314,7 +320,7 @@ model Notification {
   body      String?
   link      String?
   readAt    DateTime?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 
   user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   event Event? @relation(fields: [eventId], references: [id], onDelete: SetNull)
@@ -351,12 +357,12 @@ model ChatMessage {
 }
 
 model AttendeeInvite {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   eventId     String
   firstName   String
   lastName    String
   email       String
-  invitedAt   DateTime @default(now())
+  invitedAt   DateTime  @default(now())
   activatedAt DateTime?
   emailSentAt DateTime?
 
@@ -384,4 +390,64 @@ model Announcement {
   author User  @relation("AnnouncementAuthor", fields: [authorId], references: [id])
 
   @@index([eventId, createdAt])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actorEmail String?
+  actorName  String?
+  action     String
+  targetType String?
+  targetId   String?
+  summary    String
+  metadata   String?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId, createdAt])
+  @@index([action, createdAt])
+  @@index([targetType, targetId])
+}
+
+model EventSurvey {
+  id          String   @id @default(cuid())
+  eventId     String   @unique
+  title       String
+  description String?
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  event     Event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  questions EventSurveyQuestion[]
+  responses EventSurveyResponse[]
+}
+
+model EventSurveyQuestion {
+  id       String  @id @default(cuid())
+  surveyId String
+  order    Int     @default(0)
+  prompt   String
+  type     String
+  options  String?
+  required Boolean @default(false)
+
+  survey EventSurvey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+}
+
+model EventSurveyResponse {
+  id          String   @id @default(cuid())
+  surveyId    String
+  userId      String
+  answers     String
+  submittedAt DateTime @default(now())
+
+  survey EventSurvey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([surveyId, userId])
+  @@index([surveyId, submittedAt])
 }

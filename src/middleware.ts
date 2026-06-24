@@ -9,7 +9,12 @@ const COOKIE = "uon_hub_session";
 const PUBLIC_EXACT = [
   "/",
   "/login",
+  "/forgot",
+  "/reset",
   "/api/auth/login",
+  "/api/auth/forgot",
+  "/api/auth/reset",
+  "/manifest.webmanifest",
 ];
 
 const PUBLIC_PREFIX = [
