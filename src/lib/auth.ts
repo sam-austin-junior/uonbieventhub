@@ -76,3 +76,39 @@ export async function requireUser() {
 }
 
 export const SESSION_COOKIE_NAME = COOKIE;
+
+/* ── TOTP challenge cookie ──────────────────────────────────────────────── */
+const TOTP_COOKIE = "uon_hub_totp_pending";
+const TOTP_TTL_SECONDS = 5 * 60;
+
+type TotpChallenge = { userId: string; email: string };
+
+export async function createTotpChallengeCookie(payload: TotpChallenge) {
+  const token = await new SignJWT({ ...payload })
+    .setProtectedHeader({ alg: ALG })
+    .setIssuedAt()
+    .setExpirationTime(`${TOTP_TTL_SECONDS}s`)
+    .sign(SECRET);
+  cookies().set(TOTP_COOKIE, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: TOTP_TTL_SECONDS,
+  });
+}
+
+export async function readTotpChallengeCookie(): Promise<TotpChallenge | null> {
+  const token = cookies().get(TOTP_COOKIE)?.value;
+  if (!token) return null;
+  try {
+    const { payload } = await jwtVerify(token, SECRET);
+    return payload as unknown as TotpChallenge;
+  } catch {
+    return null;
+  }
+}
+
+export async function clearTotpChallengeCookie() {
+  cookies().delete(TOTP_COOKIE);
+}

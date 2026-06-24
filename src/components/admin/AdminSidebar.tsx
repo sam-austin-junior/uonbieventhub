@@ -13,6 +13,9 @@ import {
   Megaphone,
   ArrowLeftRight,
   ShieldCheck,
+  ClipboardList,
+  BarChart3,
+  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
@@ -29,6 +32,7 @@ export function AdminSidebar({
     { href: "/admin/events", label: "Events", icon: CalendarRange },
     { href: "/admin/check-in", label: "QR Check-in", icon: QrCode },
     { href: "/admin/security", label: "Security (2FA)", icon: ShieldCheck },
+    { href: "/admin/billing", label: "Billing", icon: CreditCard },
   ];
   // Derive the *current* event id from the URL so per-event links always
   // point at the event the user is actually viewing (never some other org's).
@@ -38,12 +42,14 @@ export function AdminSidebar({
   const eventScoped = currentEventId
     ? [
         { href: `/admin/events/${currentEventId}`, label: "Overview", icon: LayoutDashboard, exact: true },
+        { href: `/admin/events/${currentEventId}/analytics`, label: "Analytics", icon: BarChart3, exact: false },
         { href: `/admin/events/${currentEventId}/sessions`, label: "Sessions", icon: Calendar, exact: false },
         { href: `/admin/events/${currentEventId}/speakers`, label: "Speakers", icon: Mic2, exact: false },
         { href: `/admin/events/${currentEventId}/attendees`, label: "Attendees", icon: Users, exact: false },
         { href: `/admin/events/${currentEventId}/exhibitors`, label: "Exhibitors", icon: Store, exact: false },
         { href: `/admin/events/${currentEventId}/pages`, label: "Custom Pages", icon: FileText, exact: false },
         { href: `/admin/events/${currentEventId}/announcements`, label: "Announcements", icon: Megaphone, exact: false },
+        { href: `/admin/events/${currentEventId}/survey`, label: "Post-event survey", icon: ClipboardList, exact: false },
       ]
     : [];
 

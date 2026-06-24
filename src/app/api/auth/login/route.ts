@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { createSessionToken, setSessionCookie, verifyPassword } from "@/lib/auth";
+import {
+  createSessionToken,
+  createTotpChallengeCookie,
+  setSessionCookie,
+  verifyPassword,
+} from "@/lib/auth";
 
 const schema = z.object({
   email: z.string().email(),
@@ -34,6 +39,10 @@ export async function POST(req: Request) {
       { error: "Your access window has ended. Contact the hub admin to renew." },
       { status: 403 }
     );
+  }
+  if (user.totpEnabledAt && user.totpSecret) {
+    await createTotpChallengeCookie({ userId: user.id, email: user.email });
+    return NextResponse.json({ needsTotp: true });
   }
   const token = await createSessionToken({
     userId: user.id,

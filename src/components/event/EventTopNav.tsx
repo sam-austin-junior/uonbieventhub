@@ -25,6 +25,7 @@ import {
   Inbox,
   LogOut,
   Shield,
+  ClipboardList,
 } from "lucide-react";
 
 type CustomPage = { id: string; title: string };
@@ -88,6 +89,7 @@ export function EventTopNav({
 
   const more = [
     { href: `${base}/ondemand`, label: "On-Demand", icon: PlayCircle, desc: "Recorded sessions" },
+    { href: `${base}/survey`, label: "Share feedback", icon: ClipboardList, desc: "Post-event survey" },
     { href: `${base}/connections`, label: "Connections", icon: UserPlus, desc: "Network requests" },
     { href: `${base}/profile-edit`, label: "My profile", icon: UserCog, desc: "Edit your bio" },
     { href: `${base}/settings`, label: "Settings", icon: Settings, desc: "Notifications and privacy" },

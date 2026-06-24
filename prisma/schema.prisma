@@ -88,6 +88,8 @@ model User {
   totpSecret    String?
   totpEnabledAt DateTime?
 
+  stripeCustomerId String? @unique
+
   notifySessionEmail      Boolean @default(true)
   notifySessionInApp      Boolean @default(true)
   notifyMessagesEmail     Boolean @default(true)
@@ -117,6 +119,7 @@ model User {
   authoredAnnouncements Announcement[]        @relation("AnnouncementAuthor")
   auditEntries          AuditLog[]            @relation("AuditActor")
   surveyResponses       EventSurveyResponse[]
+  payments              Payment[]
 }
 
 model Event {
@@ -133,6 +136,7 @@ model Event {
   logoUrl      String?
   status       EventStatus  @default(PUBLISHED)
   attendeeMode AttendeeMode @default(INVITE_ONLY)
+  customDomain String?      @unique
   organizerId  String
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
@@ -450,4 +454,22 @@ model EventSurveyResponse {
 
   @@unique([surveyId, userId])
   @@index([surveyId, submittedAt])
+}
+
+model Payment {
+  id                    String    @id @default(cuid())
+  userId                String
+  amountCents           Int
+  currency              String    @default("USD")
+  status                String    @default("pending")
+  description           String?
+  stripeSessionId       String?   @unique
+  stripePaymentIntentId String?   @unique
+  metadata              String?
+  createdAt             DateTime  @default(now())
+  paidAt                DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }
