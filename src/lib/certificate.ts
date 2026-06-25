@@ -21,7 +21,7 @@ const INK_300 = rgb(0.69, 0.74, 0.8);
 export async function generateCertificate(input: CertificateInput): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
   pdf.setTitle(`Certificate — ${input.attendeeName} — ${input.eventName}`);
-  pdf.setAuthor("University of Nairobi Event Hub");
+  pdf.setAuthor("Unity of Nations Event Hub");
   pdf.setCreator("UoN Event Hub");
 
   const page = pdf.addPage([842, 595]); // A4 landscape
@@ -173,7 +173,7 @@ export async function generateCertificate(input: CertificateInput): Promise<Uint
     thickness: 0.5,
     color: INK_300,
   });
-  page.drawText("University of Nairobi Event Hub", {
+  page.drawText("Unity of Nations Event Hub", {
     x: halfX + 60,
     y: footerY + 14,
     size: 10,

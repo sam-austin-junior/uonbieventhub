@@ -55,7 +55,7 @@ export default async function LandingPage() {
               <p className="mt-6 text-lg text-white/80 max-w-xl">
                 UoN Event Hub is the all-in-one platform institutions, faculties and partner
                 organisations use to run conferences, summits and convenings — branded with
-                your event, hosted on infrastructure managed by the University of Nairobi.
+                your event, hosted on infrastructure managed by Unity of Nations.
               </p>
               <div className="mt-9 flex flex-wrap gap-3">
                 <Link
@@ -147,13 +147,13 @@ export default async function LandingPage() {
         <div className="grid sm:grid-cols-3 gap-5">
           <Audience
             icon={<GraduationCap className="h-5 w-5" />}
-            title="UoN faculties &amp; colleges"
+            title="Universities &amp; colleges"
             body="Research weeks, alumni reunions, faculty symposia, graduations — co-ordinated centrally, branded individually."
           />
           <Audience
             icon={<Building2 className="h-5 w-5" />}
             title="Partner institutions"
-            body="Sister universities, agencies and ministries that want UoN-grade infrastructure for their own events."
+            body="Sister universities, agencies and ministries that want enterprise-grade infrastructure for their own events."
           />
           <Audience
             icon={<Briefcase className="h-5 w-5" />}
@@ -348,10 +348,10 @@ export default async function LandingPage() {
           </p>
           <div className="mt-8 flex justify-center gap-3 flex-wrap">
             <a
-              href="mailto:eventhub@uonbi.ac.ke"
+              href="mailto:eventhub@uonbieventhub.co.ke"
               className="inline-flex items-center gap-2 rounded-md bg-accent text-ink-900 px-6 py-3 text-sm font-semibold hover:bg-accent-dark hover:text-white transition"
             >
-              <Mail className="h-4 w-4" /> eventhub@uonbi.ac.ke
+              <Mail className="h-4 w-4" /> eventhub@uonbieventhub.co.ke
             </a>
             <Link
               href="/login"
@@ -376,7 +376,7 @@ function PublicNav({ session }: { session: unknown }) {
           <Logo size={40} bg="white" />
           <div className="text-sm leading-tight">
             <div className="text-[10px] uppercase tracking-[0.2em] text-white/60">
-              University of Nairobi
+              Unity of Nations
             </div>
             <div className="font-semibold">Event Hub</div>
           </div>
@@ -423,14 +423,14 @@ function PublicFooter() {
             <Logo size={36} />
             <div>
               <div className="text-[10px] uppercase tracking-[0.2em] text-ink-400">
-                University of Nairobi
+                Unity of Nations
               </div>
               <div className="font-semibold text-ink-900">Event Hub</div>
             </div>
           </div>
           <p className="text-xs max-w-sm">
-            The official event management platform of the University of Nairobi —
-            available to UoN faculties and partner institutions on a paid basis.
+            The official event management platform of the Unity of Nations —
+            available to universities, institutions and partner organisations on a paid basis.
           </p>
         </div>
         <div>
@@ -445,15 +445,15 @@ function PublicFooter() {
         <div>
           <div className="text-xs uppercase tracking-wider text-ink-400 mb-3">Contact</div>
           <ul className="space-y-2 text-sm">
-            <li><a href="mailto:eventhub@uonbi.ac.ke" className="hover:text-ink-900">eventhub@uonbi.ac.ke</a></li>
-            <li><a href="https://uonbi.ac.ke" target="_blank" rel="noreferrer" className="hover:text-ink-900">uonbi.ac.ke</a></li>
+            <li><a href="mailto:eventhub@uonbieventhub.co.ke" className="hover:text-ink-900">eventhub@uonbieventhub.co.ke</a></li>
+            <li><a href="https://uonbieventhub.co.ke" className="hover:text-ink-900">uonbieventhub.co.ke</a></li>
           </ul>
         </div>
       </div>
       <div className="border-t border-ink-100">
         <div className="max-w-6xl mx-auto px-6 py-4 text-xs text-ink-400 flex justify-between flex-wrap gap-2">
-          <span>© {new Date().getFullYear()} University of Nairobi. All rights reserved.</span>
-          <span>Knowledge for the world.</span>
+          <span>© {new Date().getFullYear()} Unity of Nations. All rights reserved.</span>
+          <span>Events, brought together.</span>
         </div>
       </div>
     </footer>

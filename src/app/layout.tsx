@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "UoN Event Hub",
   description:
-    "The official multi-tenant event management platform for the University of Nairobi.",
+    "The official multi-tenant event management platform for the Unity of Nations.",
   icons: {
     icon: [
       { url: "/favicon.png", type: "image/png" },

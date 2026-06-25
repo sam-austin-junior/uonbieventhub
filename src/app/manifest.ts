@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "UoN Event Hub",
     short_name: "UoN Events",
     description:
-      "The official multi-tenant event management platform for the University of Nairobi.",
+      "The official multi-tenant event management platform for the Unity of Nations.",
     start_url: "/",
     display: "standalone",
     background_color: "#f7f9fc",

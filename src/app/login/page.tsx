@@ -12,7 +12,7 @@ export default function LoginPage() {
           <Logo size={36} />
           <div className="text-sm leading-tight">
             <div className="text-[10px] uppercase tracking-[0.2em] text-ink-400">
-              University of Nairobi
+              Unity of Nations
             </div>
             <div className="font-semibold">Event Hub</div>
           </div>
@@ -38,7 +38,7 @@ export default function LoginPage() {
 
           <p className="mt-6 text-xs text-ink-400 text-center">
             Don't have an account? Organizer accounts are provisioned by the hub admin —{" "}
-            <a href="mailto:eventhub@uonbi.ac.ke" className="text-brand-700 hover:underline">
+            <a href="mailto:eventhub@uonbieventhub.co.ke" className="text-brand-700 hover:underline">
               contact us
             </a>
             .
@@ -47,7 +47,7 @@ export default function LoginPage() {
       </main>
 
       <footer className="px-6 py-4 text-center text-xs text-ink-400">
-        © {new Date().getFullYear()} University of Nairobi. All rights reserved.
+        © {new Date().getFullYear()} Unity of Nations. All rights reserved.
       </footer>
     </div>
   );

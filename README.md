@@ -1,6 +1,6 @@
-# University of Nairobi — Event Hub
+# Unity of Nations — Event Hub
 
-The official multi-tenant event management platform for the University of Nairobi. UoN faculties and partner institutions pay to use it; each event lives at its own branded URL, fully isolated from every other event on the platform.
+The official multi-tenant event management platform for the Unity of Nations. UoN faculties and partner institutions pay to use it; each event lives at its own branded URL, fully isolated from every other event on the platform.
 
 ## Three roles
 
@@ -87,7 +87,7 @@ Sample event URL: `http://localhost:3000/e/uon-research-week-2026`
 
 There's no public sign-up for organizers — institutions reach out, pay, and the hub admin provisions their account.
 
-1. Institution emails `eventhub@uonbi.ac.ke`, pays the fee offline.
+1. Institution emails `eventhub@uonbieventhub.co.ke`, pays the fee offline.
 2. Hub admin signs in to `/hub-admin/organizers`, clicks **New organizer**, fills `name + email + institution + validity period`.
 3. System generates a random password and either emails it (if Resend is configured) or shows it once in a reveal modal for secure manual sharing.
 4. Organizer signs in at `/login`, lands on `/admin`, and starts creating events.
@@ -140,12 +140,12 @@ All transactional email goes through **[Resend](https://resend.com)**. The API k
 Setup:
 
 ```bash
-# 1. Sign up at https://resend.com and verify your sending domain (e.g. uonbi.ac.ke).
+# 1. Sign up at https://resend.com and verify your sending domain (e.g. uonbieventhub.co.ke).
 # 2. Create an API key at https://resend.com/api-keys
 # 3. Add to .env:
 RESEND_API_KEY="re_..."
 # Fallback "From" if hub admin hasn't set one in the UI:
-RESEND_FROM_EMAIL="events@uonbi.ac.ke"
+RESEND_FROM_EMAIL="events@uonbieventhub.co.ke"
 RESEND_FROM_NAME="UoN Event Hub"
 # 4. Hub admin → Platform settings → Email → set From name + From email (must be a verified Resend domain) → Send test email.
 ```

@@ -25,7 +25,7 @@ export function Logo({
     >
       <img
         src="/uon-logo.png"
-        alt="University of Nairobi"
+        alt="Unity of Nations"
         width={size}
         height={size}
         style={{ width: "100%", height: "100%", objectFit: "contain" }}

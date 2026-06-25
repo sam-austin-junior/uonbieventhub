@@ -22,7 +22,7 @@ export default function GlobalError({
           <Logo size={36} />
           <div className="text-sm leading-tight">
             <div className="text-[10px] uppercase tracking-[0.2em] text-ink-400">
-              University of Nairobi
+              Unity of Nations
             </div>
             <div className="font-semibold">Event Hub</div>
           </div>
@@ -54,7 +54,7 @@ export default function GlobalError({
       </div>
 
       <footer className="px-6 py-4 text-center text-xs text-ink-400">
-        © {new Date().getFullYear()} University of Nairobi
+        © {new Date().getFullYear()} Unity of Nations
       </footer>
     </main>
   );

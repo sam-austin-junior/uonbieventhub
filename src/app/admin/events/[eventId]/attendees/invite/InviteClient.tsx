@@ -132,7 +132,7 @@ export function InviteClient({ eventId, invites }: { eventId: string; invites: I
             onChange={(e) => setText(e.target.value)}
             rows={6}
             className="input font-mono text-xs"
-            placeholder={"Brenda, Kamau, brenda@uonbi.ac.ke\nJames, Onyango, james@uonbi.ac.ke"}
+            placeholder={"Brenda, Kamau, brenda@example.com\nJames, Onyango, james@example.com"}
           />
         </div>
 

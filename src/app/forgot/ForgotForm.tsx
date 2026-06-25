@@ -58,7 +58,7 @@ export function ForgotForm() {
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
             className="input pl-9"
-            placeholder="you@uonbi.ac.ke"
+            placeholder="you@example.com"
           />
         </div>
       </div>

@@ -39,7 +39,7 @@ async function main() {
       name: "Hub Administrator",
       role: Role.SUPERADMIN,
       jobTitle: "Platform Owner",
-      organization: "University of Nairobi",
+      organization: "Unity of Nations",
       activatedAt: new Date(),
     },
   });
@@ -64,11 +64,11 @@ async function main() {
       name: "UoN Research & Innovation Week 2026",
       tagline: "Knowledge for the World",
       description:
-        "A week-long convening of researchers, students, industry partners and policy makers to showcase the University of Nairobi's leading research and innovation. Join workshops, keynotes, exhibitions and networking sessions across all faculties.",
+        "A week-long convening of researchers, students, industry partners and policy makers to showcase the Unity of Nations' leading research and innovation. Join workshops, keynotes, exhibitions and networking sessions across all faculties.",
       startDate: new Date("2026-07-13T08:00:00+03:00"),
       endDate: new Date("2026-07-17T17:00:00+03:00"),
       timezone: "Africa/Nairobi",
-      venue: "Chancellor's Court, Main Campus, University of Nairobi",
+      venue: "Chancellor's Court, Main Campus, Unity of Nations",
       coverImage: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80",
       logoUrl: "https://ui-avatars.com/api/?name=UoN&background=174776&color=fff&size=200",
       attendeeMode: AttendeeMode.INVITE_ONLY,
@@ -96,7 +96,7 @@ async function main() {
           name: `${a.firstName} ${a.lastName}`,
           role: Role.ATTENDEE,
           jobTitle: a.jobTitle,
-          organization: "University of Nairobi",
+          organization: "Unity of Nations",
           faculty: a.faculty,
           bio: `${a.jobTitle} interested in interdisciplinary research and innovation.`,
           studentId: `UoN/${10000 + i}/2025`,
@@ -125,8 +125,8 @@ async function main() {
   }
 
   const speakerData = [
-    { name: "Prof. Stephen Kiama", jobTitle: "Vice-Chancellor", organization: "University of Nairobi", bio: "Visionary leader driving research excellence.", isKeynote: true, photoUrl: "https://i.pravatar.cc/300?u=speaker1" },
-    { name: "Prof. Margaret Hutchinson", jobTitle: "Principal, College of Agriculture", organization: "University of Nairobi", bio: "Award-winning researcher in horticulture and food systems.", isKeynote: true, photoUrl: "https://i.pravatar.cc/300?u=speaker2" },
+    { name: "Prof. Stephen Kiama", jobTitle: "Vice-Chancellor", organization: "Unity of Nations", bio: "Visionary leader driving research excellence.", isKeynote: true, photoUrl: "https://i.pravatar.cc/300?u=speaker1" },
+    { name: "Prof. Margaret Hutchinson", jobTitle: "Principal, College of Agriculture", organization: "Unity of Nations", bio: "Award-winning researcher in horticulture and food systems.", isKeynote: true, photoUrl: "https://i.pravatar.cc/300?u=speaker2" },
     { name: "Dr. Joyce Nyairo", jobTitle: "Cultural Analyst", organization: "Independent", bio: "Cultural critic and writer.", photoUrl: "https://i.pravatar.cc/300?u=speaker3" },
     { name: "Dr. Bitange Ndemo", jobTitle: "Professor of Entrepreneurship", organization: "UoN Business School", bio: "Architect of Kenya's digital economy.", photoUrl: "https://i.pravatar.cc/300?u=speaker4" },
     { name: "Dr. Catherine Ngila", jobTitle: "Executive Director", organization: "African Academy of Sciences", bio: "Chemist and champion of women in STEM.", photoUrl: "https://i.pravatar.cc/300?u=speaker5" },

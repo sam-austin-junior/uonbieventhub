@@ -247,7 +247,7 @@ export default function NewEventPage() {
               onChange={(e) => update("inviteeText", e.target.value)}
               rows={6}
               className="input font-mono text-xs"
-              placeholder={"First, Last, email@example.com\nBrenda, Kamau, brenda@uonbi.ac.ke\nJames, Onyango, james@uonbi.ac.ke"}
+              placeholder={"First, Last, email@example.com\nBrenda, Kamau, brenda@example.com\nJames, Onyango, james@example.com"}
             />
             <p className="text-xs text-ink-400">
               One attendee per line: <code className="font-mono">First, Last, email</code> (CSV or
