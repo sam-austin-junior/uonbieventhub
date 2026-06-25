@@ -1,5 +1,19 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 import { getEventBySlug } from "@/lib/event";
+
+async function resolveAliasOrRedirect(slug: string): Promise<void> {
+  const alias = await prisma.slugAlias.findUnique({
+    where: { slug },
+    include: { event: { select: { slug: true } } },
+  });
+  if (!alias) return;
+  const pathname = headers().get("x-pathname") ?? `/e/${slug}`;
+  const target = pathname.replace(`/e/${slug}`, `/e/${alias.event.slug}`);
+  redirect(target);
+}
 
 export async function generateMetadata({
   params,
@@ -8,6 +22,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const event = await getEventBySlug(params.slug);
   if (!event) {
+    await resolveAliasOrRedirect(params.slug);
     return { title: "Event not found" };
   }
   const description =
@@ -38,6 +53,16 @@ export async function generateMetadata({
   };
 }
 
-export default function EventRootLayout({ children }: { children: React.ReactNode }) {
+export default async function EventRootLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: { slug: string };
+}) {
+  const event = await getEventBySlug(params.slug);
+  if (!event) {
+    await resolveAliasOrRedirect(params.slug);
+  }
   return <>{children}</>;
 }

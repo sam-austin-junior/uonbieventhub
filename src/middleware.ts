@@ -32,6 +32,15 @@ function isEventLoginOrActivate(pathname: string) {
   );
 }
 
+function passthrough(req: NextRequest) {
+  // Forward the original pathname so server components can read it via
+  // headers().get("x-pathname") — used for slug-alias redirects that need
+  // to preserve the deep sub-path.
+  const headers = new Headers(req.headers);
+  headers.set("x-pathname", req.nextUrl.pathname);
+  return NextResponse.next({ request: { headers } });
+}
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
@@ -43,7 +52,7 @@ export async function middleware(req: NextRequest) {
     PUBLIC_EXACT.includes(pathname) ||
     isEventLoginOrActivate(pathname)
   ) {
-    return NextResponse.next();
+    return passthrough(req);
   }
 
   const token = req.cookies.get(COOKIE)?.value;
@@ -70,7 +79,7 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL("/", req.url));
       }
     }
-    return NextResponse.next();
+    return passthrough(req);
   } catch {
     const url = req.nextUrl.clone();
     url.pathname = "/login";

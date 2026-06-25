@@ -82,10 +82,25 @@ export async function PUT(
     return NextResponse.json({ ok: true, slug });
   }
 
-  const updated = await prisma.event.update({
-    where: { id: params.eventId },
-    data: { slug },
-    select: { id: true, slug: true, name: true },
+  const updated = await prisma.$transaction(async (tx) => {
+    // If the new slug is sitting in the alias table (e.g. organizer is
+    // rewinding to a previous name), free it up first.
+    await tx.slugAlias.deleteMany({ where: { slug } });
+
+    const ev = await tx.event.update({
+      where: { id: params.eventId },
+      data: { slug },
+      select: { id: true, slug: true, name: true },
+    });
+
+    // Remember the previous slug so old links keep working.
+    await tx.slugAlias.upsert({
+      where: { slug: current.slug },
+      update: { eventId: ev.id },
+      create: { slug: current.slug, eventId: ev.id },
+    });
+
+    return ev;
   });
 
   await writeAudit({

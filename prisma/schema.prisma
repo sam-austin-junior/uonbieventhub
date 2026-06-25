@@ -153,6 +153,18 @@ model Event {
   invites       AttendeeInvite[]
   announcements Announcement[]
   survey        EventSurvey?
+  slugAliases   SlugAlias[]
+}
+
+model SlugAlias {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  eventId   String
+  createdAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
 }
 
 model Session {
