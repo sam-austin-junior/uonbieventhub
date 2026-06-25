@@ -6,7 +6,6 @@ import { requireStaff, assertOwnsEvent } from "@/lib/admin-scope";
 import { KnowledgeUpload } from "./KnowledgeUpload";
 import { ShareEventUrl } from "./ShareEventUrl";
 import { CloneEventButton } from "./CloneEventButton";
-import { CustomDomainCard } from "./CustomDomainCard";
 import { Calendar, Mic2, Users, Store, FileText, Megaphone, UserPlus, Award } from "lucide-react";
 
 export default async function AdminEventDetail({ params }: { params: { eventId: string } }) {
@@ -73,7 +72,7 @@ export default async function AdminEventDetail({ params }: { params: { eventId: 
         />
       </header>
 
-      <ShareEventUrl slug={event.slug} />
+      <ShareEventUrl eventId={event.id} slug={event.slug} />
 
       <section className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8 mt-6">
         {tiles.map((t) => (
@@ -127,13 +126,6 @@ export default async function AdminEventDetail({ params }: { params: { eventId: 
           ) : null}
         </div>
       </section>
-
-      <CustomDomainCard
-        eventId={event.id}
-        initial={event.customDomain}
-        slug={event.slug}
-        platformHost={process.env.PLATFORM_HOST ?? "uonbieventhub.co.ke"}
-      />
 
       <KnowledgeUpload
         eventId={event.id}
