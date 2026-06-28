@@ -1,9 +1,12 @@
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { getEventBySlug, checkEventAvailability } from "@/lib/event";
 import { EventTopNav } from "@/components/event/EventTopNav";
 import { EventUnavailable } from "@/components/event/EventUnavailable";
+import { Avatar } from "@/components/ui/Avatar";
+import { ArrowRight } from "lucide-react";
 
 export default async function EventHubLayout({
   children,
@@ -29,7 +32,19 @@ export default async function EventHubLayout({
   }
 
   const session = await getSession();
-  if (!session) redirect(`/e/${params.slug}/login`);
+
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-ink-50 flex flex-col">
+        <PublicHeader
+          slug={params.slug}
+          eventName={event.name}
+          eventLogoUrl={event.logoUrl}
+        />
+        <main className="flex-1 min-w-0">{children}</main>
+      </div>
+    );
+  }
 
   const registered = await prisma.registration.findUnique({
     where: { eventId_userId: { eventId: event.id, userId: session.userId } },
@@ -67,5 +82,34 @@ export default async function EventHubLayout({
       />
       <main className="flex-1 min-w-0">{children}</main>
     </div>
+  );
+}
+
+function PublicHeader({
+  slug,
+  eventName,
+  eventLogoUrl,
+}: {
+  slug: string;
+  eventName: string;
+  eventLogoUrl: string | null;
+}) {
+  return (
+    <header className="bg-white border-b border-ink-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+        <Link href={`/e/${slug}`} className="flex items-center gap-3 min-w-0">
+          {eventLogoUrl ? (
+            <Avatar name={eventName} src={eventLogoUrl} size={32} />
+          ) : null}
+          <span className="font-semibold text-ink-900 truncate">{eventName}</span>
+        </Link>
+        <Link
+          href={`/e/${slug}/login`}
+          className="btn-primary text-sm"
+        >
+          Sign in <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+      </div>
+    </header>
   );
 }

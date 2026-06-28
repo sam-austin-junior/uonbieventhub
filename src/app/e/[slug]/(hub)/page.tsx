@@ -5,7 +5,16 @@ import { getSession } from "@/lib/auth";
 import { formatDate, formatTime, formatDateRange } from "@/lib/utils";
 import { Avatar } from "@/components/ui/Avatar";
 import { EventChatBot } from "@/components/chat/EventChatBot";
-import { Calendar, MapPin, Users, Mic2, MessageSquare, Store, ArrowRight } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  Users,
+  Mic2,
+  MessageSquare,
+  Store,
+  ArrowRight,
+  LogIn,
+} from "lucide-react";
 
 export default async function HubHomePage({ params }: { params: { slug: string } }) {
   const session = await getSession();
@@ -214,7 +223,27 @@ export default async function HubHomePage({ params }: { params: { slug: string }
         </aside>
       </div>
 
-      <EventChatBot eventId={event.id} eventName={event.name} />
+      {session ? (
+        <EventChatBot eventId={event.id} eventName={event.name} />
+      ) : (
+        <section className="bg-brand-900 text-white mt-8">
+          <div className="max-w-4xl mx-auto px-6 py-12 text-center">
+            <h2 className="text-2xl sm:text-3xl font-semibold">
+              Join {event.name}
+            </h2>
+            <p className="mt-3 text-white/80 max-w-xl mx-auto text-sm sm:text-base">
+              Sign in or activate your invite to register, chat with other
+              attendees, and access the full agenda.
+            </p>
+            <Link
+              href={`/e/${event.slug}/login`}
+              className="mt-6 inline-flex items-center gap-2 rounded-md bg-accent text-ink-900 px-6 py-3 text-sm font-semibold hover:bg-accent-dark hover:text-white transition"
+            >
+              <LogIn className="h-4 w-4" /> Sign in to participate
+            </Link>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

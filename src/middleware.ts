@@ -34,6 +34,12 @@ function isEventLoginOrActivate(pathname: string) {
   );
 }
 
+function isPublicEventLanding(pathname: string) {
+  // /e/<slug>  or  /e/<slug>/  — the event landing page itself is public so
+  // crawlers can index the JSON-LD Event schema. Deep paths stay gated.
+  return /^\/e\/[^/]+\/?$/.test(pathname);
+}
+
 function passthrough(req: NextRequest) {
   // Forward the original pathname so server components can read it via
   // headers().get("x-pathname") — used for slug-alias redirects that need
@@ -52,7 +58,8 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith("/api/public") ||
     PUBLIC_PREFIX.some((p) => pathname.startsWith(p)) ||
     PUBLIC_EXACT.includes(pathname) ||
-    isEventLoginOrActivate(pathname)
+    isEventLoginOrActivate(pathname) ||
+    isPublicEventLanding(pathname)
   ) {
     return passthrough(req);
   }
