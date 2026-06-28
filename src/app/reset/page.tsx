@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { Lockup } from "@/components/Lockup";
 import { ArrowLeft } from "lucide-react";
 import { ResetForm } from "./ResetForm";
 
@@ -27,6 +28,9 @@ export default function ResetPasswordPage() {
 
       <main className="flex-1 flex items-center justify-center px-6 pb-12">
         <div className="w-full max-w-md card p-8 sm:p-10">
+          <div className="flex justify-center mb-6">
+            <Lockup width={220} priority />
+          </div>
           <h1 className="text-2xl font-bold text-ink-900">Choose a new password</h1>
           <p className="mt-1 text-sm text-ink-500">
             At least 8 characters. You'll be signed in once you save.

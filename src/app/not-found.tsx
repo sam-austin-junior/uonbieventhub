@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { Lockup } from "@/components/Lockup";
 import { ArrowLeft, Compass } from "lucide-react";
 
 export default function NotFound() {
@@ -19,6 +20,9 @@ export default function NotFound() {
 
       <div className="flex-1 flex items-center justify-center px-6">
         <div className="max-w-md text-center">
+          <div className="flex justify-center mb-6">
+            <Lockup width={200} />
+          </div>
           <div className="inline-flex h-16 w-16 rounded-full bg-brand-100 text-brand-700 items-center justify-center">
             <Compass className="h-8 w-8" />
           </div>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { Logo } from "@/components/Logo";
+import { Lockup } from "@/components/Lockup";
 import {
   ArrowRight,
   CalendarDays,
@@ -84,44 +85,10 @@ export default async function LandingPage() {
               </div>
             </div>
 
-            {/* Stylized hero card */}
+            {/* Brand lockup */}
             <div className="relative hidden lg:block">
-              <div className="relative rounded-2xl bg-white/10 backdrop-blur ring-1 ring-white/20 p-6 shadow-pop">
-                <div className="rounded-xl bg-white text-ink-900 p-5 space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-md bg-brand-700 text-white flex items-center justify-center font-bold text-xs">
-                      UoN
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-xs text-ink-400 uppercase tracking-wider">Live event</div>
-                      <div className="font-semibold truncate">Your conference name here</div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <Tile label="Sessions" value="48" />
-                    <Tile label="Speakers" value="22" />
-                    <Tile label="Attendees" value="1.2k" />
-                  </div>
-                  <div className="rounded-md bg-ink-50 p-3 text-xs text-ink-600">
-                    <div className="font-medium text-ink-800 inline-flex items-center gap-1">
-                      <QrCode className="h-3 w-3" /> 432 checked in
-                    </div>
-                    <div className="mt-1.5 h-1 rounded-full bg-ink-200 overflow-hidden">
-                      <div className="h-full bg-brand-700" style={{ width: "65%" }} />
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-3 rounded-xl bg-white/95 text-ink-900 p-4 shadow-card flex items-start gap-3">
-                  <div className="h-9 w-9 rounded-full bg-accent text-ink-900 flex items-center justify-center shrink-0">
-                    <Sparkles className="h-4 w-4" />
-                  </div>
-                  <div className="text-sm">
-                    <div className="font-semibold">Event assistant</div>
-                    <div className="text-xs text-ink-500">
-                      "The keynote starts at 9:00 in Taifa Hall."
-                    </div>
-                  </div>
-                </div>
+              <div className="relative rounded-2xl bg-white p-10 shadow-pop ring-1 ring-white/30 flex items-center justify-center">
+                <Lockup width={360} priority />
               </div>
               <div className="absolute -top-4 -right-4 h-20 w-20 rounded-2xl bg-accent/30 blur-2xl" />
               <div className="absolute -bottom-6 -left-6 h-24 w-24 rounded-2xl bg-brand-500/40 blur-2xl" />
@@ -457,15 +424,6 @@ function PublicFooter() {
         </div>
       </div>
     </footer>
-  );
-}
-
-function Tile({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-md bg-ink-50 p-2">
-      <div className="text-base font-bold text-ink-900">{value}</div>
-      <div className="text-[10px] uppercase tracking-wider text-ink-500">{label}</div>
-    </div>
   );
 }
 

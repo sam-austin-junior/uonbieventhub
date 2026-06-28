@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { Lockup } from "@/components/Lockup";
 import { AlertTriangle, RotateCcw, ArrowLeft } from "lucide-react";
 
 export default function GlobalError({
@@ -31,6 +32,9 @@ export default function GlobalError({
 
       <div className="flex-1 flex items-center justify-center px-6">
         <div className="max-w-md text-center">
+          <div className="flex justify-center mb-6">
+            <Lockup width={200} />
+          </div>
           <div className="inline-flex h-16 w-16 rounded-full bg-amber-100 text-amber-700 items-center justify-center">
             <AlertTriangle className="h-8 w-8" />
           </div>

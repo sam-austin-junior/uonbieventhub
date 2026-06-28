@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Lockup } from "@/components/Lockup";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
 type Step = "identify" | "code" | "set-password" | "open-register";
@@ -238,8 +239,10 @@ export function EventLoginCard({
         </form>
       )}
 
-      <div className="mt-6 text-center text-xs text-ink-400">
-        Copyright {new Date().getFullYear()}
+      <div className="mt-8 pt-6 border-t border-ink-100 flex flex-col items-center gap-2">
+        <div className="text-[10px] uppercase tracking-[0.15em] text-ink-400">Powered by</div>
+        <Lockup width={140} />
+        <div className="mt-1 text-xs text-ink-400">© {new Date().getFullYear()}</div>
       </div>
     </div>
   );
