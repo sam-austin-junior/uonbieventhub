@@ -15,6 +15,8 @@ const PUBLIC_EXACT = [
   "/api/auth/forgot",
   "/api/auth/reset",
   "/manifest.webmanifest",
+  "/sitemap.xml",
+  "/robots.txt",
 ];
 
 const PUBLIC_PREFIX = [
