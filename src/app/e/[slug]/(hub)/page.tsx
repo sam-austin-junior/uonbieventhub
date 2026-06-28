@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -58,9 +59,11 @@ export default async function HubHomePage({ params }: { params: { slug: string }
           {/* Left: event brand block */}
           <div className="min-w-0">
             {event.logoUrl ? (
-              <img
+              <Image
                 src={event.logoUrl}
                 alt={event.name}
+                width={80}
+                height={80}
                 className="h-16 w-16 sm:h-20 sm:w-20 rounded-md object-contain ring-1 ring-ink-100 bg-white mb-5"
               />
             ) : null}
@@ -91,10 +94,13 @@ export default async function HubHomePage({ params }: { params: { slug: string }
           {/* Right: cover image */}
           <div className="relative aspect-[4/3] sm:aspect-[16/10] rounded-xl overflow-hidden bg-ink-100">
             {event.coverImage ? (
-              <img
+              <Image
                 src={event.coverImage}
                 alt=""
-                className="absolute inset-0 h-full w-full object-cover"
+                fill
+                priority
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                className="object-cover"
               />
             ) : (
               <div className="absolute inset-0 bg-gradient-to-br from-brand-700 to-brand-900" />

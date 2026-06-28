@@ -33,7 +33,7 @@ export async function generateMetadata({
       ? event.description.slice(0, 157) + "…"
       : event.description);
   const url = `${BASE}/e/${event.slug}`;
-  const image = event.coverImage ?? event.logoUrl ?? undefined;
+  const ogImage = event.coverImage ?? `${BASE}/api/e/${event.slug}/og`;
 
   return {
     title: event.name,
@@ -45,13 +45,13 @@ export async function generateMetadata({
       url,
       siteName: event.name,
       type: "website",
-      images: image ? [{ url: image }] : undefined,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: event.name }],
     },
     twitter: {
-      card: image ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: event.name,
       description,
-      images: image ? [image] : undefined,
+      images: [ogImage],
     },
   };
 }

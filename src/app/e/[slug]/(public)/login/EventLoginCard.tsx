@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
@@ -104,9 +105,11 @@ export function EventLoginCard({
     <div className="w-full max-w-md bg-white rounded-xl shadow-pop p-8 sm:p-10">
       <div className="flex flex-col items-center text-center">
         {eventLogoUrl ? (
-          <img
+          <Image
             src={eventLogoUrl}
             alt={eventName}
+            width={64}
+            height={64}
             className="h-16 w-16 rounded-md object-contain ring-1 ring-ink-100 bg-white p-1.5"
           />
         ) : null}

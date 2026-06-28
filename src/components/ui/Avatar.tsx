@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cn, initials } from "@/lib/utils";
 
 export function Avatar({
@@ -13,7 +14,7 @@ export function Avatar({
 }) {
   if (src) {
     return (
-      <img
+      <Image
         src={src}
         alt={name}
         width={size}

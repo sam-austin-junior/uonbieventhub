@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export function Logo({
@@ -23,7 +24,7 @@ export function Logo({
       )}
       style={{ width: size, height: size }}
     >
-      <img
+      <Image
         src="/uon-logo.png"
         alt="Unity of Nations"
         width={size}

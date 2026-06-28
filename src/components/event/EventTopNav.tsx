@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -110,9 +111,11 @@ export function EventTopNav({
         {/* Brand: event logo + name */}
         <Link href={base} className="flex items-center gap-2 shrink-0 min-w-0">
           {eventLogoUrl ? (
-            <img
+            <Image
               src={eventLogoUrl}
               alt={eventName}
+              width={36}
+              height={36}
               className="h-9 w-9 rounded-md object-contain ring-1 ring-ink-100 bg-white"
             />
           ) : (
@@ -220,9 +223,11 @@ export function EventTopNav({
               aria-label="Account menu"
             >
               {user.avatarUrl ? (
-                <img
+                <Image
                   src={user.avatarUrl}
                   alt={user.name}
+                  width={36}
+                  height={36}
                   className="h-9 w-9 rounded-full object-cover ring-1 ring-ink-100"
                 />
               ) : (

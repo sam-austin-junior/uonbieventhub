@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ExternalLink, Mail, MapPin } from "lucide-react";
@@ -53,9 +54,11 @@ export default async function ExhibitorsPage({
           <div key={e.id} className="card p-5">
             <div className="flex items-start gap-4">
               {e.logoUrl ? (
-                <img
+                <Image
                   src={e.logoUrl}
                   alt=""
+                  width={56}
+                  height={56}
                   className="h-14 w-14 rounded-md object-cover ring-1 ring-ink-100 bg-white"
                 />
               ) : (

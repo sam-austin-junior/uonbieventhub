@@ -1,5 +1,6 @@
 "use client";
 import { useState, useTransition } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Modal, ConfirmDialog } from "@/components/ui/Modal";
 import { FileUpload } from "@/components/ui/FileUpload";
@@ -107,7 +108,7 @@ export function ExhibitorsTable({ eventId, rows }: { eventId: string; rows: Row[
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3">
                     {e.logoUrl ? (
-                      <img src={e.logoUrl} alt="" className="h-8 w-8 rounded ring-1 ring-ink-100" />
+                      <Image src={e.logoUrl} alt="" width={32} height={32} className="h-8 w-8 rounded ring-1 ring-ink-100" />
                     ) : (
                       <div className="h-8 w-8 rounded bg-ink-100" />
                     )}

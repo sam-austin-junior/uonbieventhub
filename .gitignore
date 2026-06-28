@@ -17,3 +17,7 @@ public/uploads/**/*
 
 # TypeScript incremental build cache
 tsconfig.tsbuildinfo
+
+# Lighthouse reports
+lighthouse-reports
+.lighthouseci
