@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
 import { ExternalLink } from "lucide-react";
+import { DeleteEventButton } from "./DeleteEventButton";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +35,7 @@ export default async function AllEvents() {
               <th className="px-5 py-3 text-left">URL</th>
               <th className="px-5 py-3 text-right">Sessions</th>
               <th className="px-5 py-3 text-right">Attending</th>
+              <th className="px-5 py-3 text-right w-12"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
@@ -57,10 +59,13 @@ export default async function AllEvents() {
                 </td>
                 <td className="px-5 py-3 text-right">{e._count.sessions}</td>
                 <td className="px-5 py-3 text-right">{e._count.registrations}</td>
+                <td className="px-3 py-3 text-right">
+                  <DeleteEventButton eventId={e.id} eventName={e.name} eventSlug={e.slug} />
+                </td>
               </tr>
             ))}
             {events.length === 0 ? (
-              <tr><td colSpan={7} className="px-5 py-10 text-center text-ink-500">No events yet.</td></tr>
+              <tr><td colSpan={8} className="px-5 py-10 text-center text-ink-500">No events yet.</td></tr>
             ) : null}
           </tbody>
         </table>

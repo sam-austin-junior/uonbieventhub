@@ -44,18 +44,18 @@ export default async function LandingPage() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-3 py-1 text-xs font-medium text-ink-600">
                 <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Trusted by Unity of Nations convenings
+                Built for organisations worldwide
               </div>
               <h1 className="mt-7 text-[2.75rem] sm:text-6xl lg:text-[4.5rem] font-semibold tracking-tight leading-[1.02] text-ink-900">
                 Run world-class
                 <br />
-                events.{" "}
-                <span className="text-brand-700">Beautifully.</span>
+                events. <span className="text-brand-700">Beautifully.</span>
               </h1>
               <p className="mt-7 text-lg sm:text-xl text-ink-600 max-w-xl leading-relaxed">
-                The all-in-one platform institutions, faculties and partner organisations
-                use to host conferences, summits and convenings — branded with your event,
-                hosted on infrastructure managed by Unity of Nations.
+                The all-in-one platform institutions, faculties and partner
+                organisations use to host conferences, summits and convenings —
+                branded with your event, hosted on infrastructure managed by
+                Unity of Nations.
               </p>
               <div className="mt-9 flex flex-wrap items-center gap-3">
                 <Link
@@ -101,25 +101,26 @@ export default async function LandingPage() {
               One platform, every kind of convening.
             </h2>
             <p className="mt-4 text-lg text-ink-600 leading-relaxed">
-              Designed for organisations that run real-world and hybrid events and need
-              their attendee experience to feel like theirs — not a generic SaaS.
+              Designed for organisations that run real-world and hybrid events
+              and need their attendee experience to feel like theirs — not a
+              generic SaaS.
             </p>
           </div>
           <div className="mt-14 grid sm:grid-cols-3 gap-px bg-ink-100 rounded-2xl overflow-hidden ring-1 ring-ink-100">
             <Audience
               icon={<GraduationCap className="h-5 w-5" />}
-              title="Universities & colleges"
+              title="Universities & academia"
               body="Research weeks, alumni reunions, faculty symposia, graduations — co-ordinated centrally, branded individually."
             />
             <Audience
               icon={<Building2 className="h-5 w-5" />}
-              title="Partner institutions"
-              body="Sister universities, agencies and ministries that want enterprise-grade infrastructure for their own events."
+              title="Corporations & enterprises"
+              body="Internal summits, product launches, leadership offsites and partner days — branded for your company, run on enterprise-grade infrastructure."
             />
             <Audience
               icon={<Briefcase className="h-5 w-5" />}
-              title="Industry & NGOs"
-              body="Sponsors, exhibitors and partners that host their own programmes alongside UoN convenings."
+              title="NGOs & associations"
+              body="Member meetings, advocacy summits and sector convenings — open registration or strict invite-only guest lists, in any timezone."
             />
           </div>
         </div>
@@ -134,8 +135,9 @@ export default async function LandingPage() {
               Everything you need to run a great event.
             </h2>
             <p className="mt-4 text-lg text-ink-600 leading-relaxed">
-              One branded hub for the whole attendee journey — registration, programme,
-              networking, check-in, broadcasts and post-event on-demand.
+              One branded hub for the whole attendee journey — registration,
+              programme, networking, check-in, broadcasts and post-event
+              on-demand.
             </p>
           </div>
           <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -186,8 +188,8 @@ export default async function LandingPage() {
             <Step
               num={1}
               icon={<PhoneCall className="h-4 w-4" />}
-              title="Reach out to the hub admin"
-              body="The hub admin team verifies your organisation, agrees on pricing and creates your organizer account."
+              title="Talk to our team"
+              body="We verify your organisation, agree on pricing in your currency, and create your organizer account."
             />
             <Step
               num={2}
@@ -228,8 +230,8 @@ export default async function LandingPage() {
             />
             <Diff
               icon={<Globe2 className="h-5 w-5" />}
-              title="Built for African convenings"
-              body="Africa/Nairobi timezone defaults, mobile-first design and KES-friendly pricing."
+              title="Global by design"
+              body="Configure per-event timezone, language and date format. Mobile-first attendee experience that works anywhere."
             />
             <Diff
               icon={<Lock className="h-5 w-5" />}
@@ -254,40 +256,43 @@ export default async function LandingPage() {
               Simple, transparent, no surprises.
             </h2>
             <p className="mt-4 text-lg text-ink-600 leading-relaxed">
-              A flat per-event fee covers unlimited sessions, attendees, speakers and
-              exhibitors. Hub admin sets pricing — institutional and academic discounts
-              available.
+              A flat fee covers unlimited sessions, attendees, speakers and
+              exhibitors. No per-attendee charges, ever. Pricing quoted in your
+              local currency.
             </p>
           </div>
-          <div className="mt-14 grid lg:grid-cols-3 gap-6">
+          <div className="mt-14 grid lg:grid-cols-3 gap-6 items-stretch">
             <PlanCard
-              name="Per event"
-              description="Best for one-off conferences and annual flagships."
+              name="Single event"
+              tagline="One-off"
+              description="Conferences, summits and annual flagships."
               features={[
                 "Unlimited sessions & speakers",
                 "Unlimited attendees",
                 "QR check-in & certificates",
                 "AI assistant on your programme",
-                "Email broadcasts",
+                "Email & in-app broadcasts",
               ]}
             />
             <PlanCard
-              name="Department"
+              name="Team"
+              tagline="Most popular"
               recommended
-              description="Best for faculties hosting multiple events per year."
+              description="Organisations hosting multiple events per year."
               features={[
-                "Everything in Per event",
+                "Everything in Single event",
                 "Unlimited events per year",
                 "Multiple organizer seats",
-                "Priority hub admin support",
-                "Custom domain on request",
+                "Priority onboarding & support",
+                "Quarterly business review",
               ]}
             />
             <PlanCard
-              name="Partner institution"
-              description="Best for external universities and agencies."
+              name="Enterprise"
+              tagline="Tailored"
+              description="Large organisations with custom requirements."
               features={[
-                "Everything in Department",
+                "Everything in Team",
                 "Co-branded onboarding",
                 "Dedicated success manager",
                 "SLA on email delivery",
@@ -295,8 +300,9 @@ export default async function LandingPage() {
               ]}
             />
           </div>
-          <p className="text-center text-sm text-ink-500 mt-8">
-            Exact pricing is set by the hub admin and shared during onboarding.
+          <p className="text-center text-sm text-ink-500 mt-10">
+            Pricing is confirmed during onboarding. Academic, NGO and
+            multi-year discounts available on request.
           </p>
         </div>
       </section>
@@ -305,10 +311,10 @@ export default async function LandingPage() {
       <section id="talk-to-us" className="border-b border-ink-100">
         <div className="max-w-5xl mx-auto px-6 py-24 sm:py-32 text-center">
           <h2 className="text-4xl sm:text-5xl font-semibold tracking-tight text-ink-900">
-            Ready to host your next event with UoN?
+            Ready to host your next event?
           </h2>
           <p className="mt-5 text-lg text-ink-600 max-w-2xl mx-auto leading-relaxed">
-            Reach out to the hub admin team — we'll set up your organizer account, walk
+            Talk to our team — we'll set up your organizer account, walk
             through the platform and have you live in under a day.
           </p>
           <div className="mt-9 flex justify-center gap-3 flex-wrap">
@@ -347,13 +353,23 @@ function PublicNav({ session }: { session: unknown }) {
           className="flex items-center gap-2.5 text-ink-900"
         >
           <Logo size={32} rounded={false} bg="transparent" className="ring-0" />
-          <span className="text-sm font-semibold tracking-tight">UoN Event Hub</span>
+          <span className="text-sm font-semibold tracking-tight">
+            UoN Event Hub
+          </span>
         </Link>
         <div className="hidden md:flex items-center gap-7 text-sm text-ink-600">
-          <a href="#who" className="hover:text-ink-900 transition-colors">Who it's for</a>
-          <a href="#features" className="hover:text-ink-900 transition-colors">Features</a>
-          <a href="#how" className="hover:text-ink-900 transition-colors">How it works</a>
-          <a href="#pricing" className="hover:text-ink-900 transition-colors">Pricing</a>
+          <a href="#who" className="hover:text-ink-900 transition-colors">
+            Who it's for
+          </a>
+          <a href="#features" className="hover:text-ink-900 transition-colors">
+            Features
+          </a>
+          <a href="#how" className="hover:text-ink-900 transition-colors">
+            How it works
+          </a>
+          <a href="#pricing" className="hover:text-ink-900 transition-colors">
+            Pricing
+          </a>
         </div>
         <div className="flex items-center gap-2">
           {session ? (
@@ -367,7 +383,7 @@ function PublicNav({ session }: { session: unknown }) {
             <>
               <Link
                 href="/login"
-                className="hidden sm:inline-flex rounded-full px-4 py-2 text-sm font-medium text-ink-700 hover:text-ink-900 hover:bg-ink-50 transition-colors"
+                className="inline-flex rounded-full px-3 sm:px-4 py-2 text-sm font-medium text-ink-700 hover:text-ink-900 hover:bg-ink-50 transition-colors"
               >
                 Sign in
               </Link>
@@ -391,14 +407,20 @@ function PublicFooter() {
       <div className="max-w-6xl mx-auto px-6 py-16 grid sm:grid-cols-4 gap-10 text-sm">
         <div className="sm:col-span-2 space-y-4">
           <Link href="/" className="inline-flex items-center gap-2.5">
-            <Logo size={32} rounded={false} bg="transparent" className="ring-0" />
+            <Logo
+              size={32}
+              rounded={false}
+              bg="transparent"
+              className="ring-0"
+            />
             <span className="text-sm font-semibold tracking-tight text-ink-900">
               UoN Event Hub
             </span>
           </Link>
           <p className="text-sm text-ink-600 max-w-sm leading-relaxed">
-            The official event management platform of the Unity of Nations — available
-            to universities, institutions and partner organisations on a paid basis.
+            An all-in-one event management platform by Unity of Nations —
+            used by universities, enterprises, NGOs and partner organisations
+            to host branded events at any scale.
           </p>
         </div>
         <div>
@@ -406,10 +428,35 @@ function PublicFooter() {
             Platform
           </div>
           <ul className="space-y-3">
-            <li><a href="#features" className="hover:text-ink-900 transition-colors">Features</a></li>
-            <li><a href="#how" className="hover:text-ink-900 transition-colors">How it works</a></li>
-            <li><a href="#pricing" className="hover:text-ink-900 transition-colors">Pricing</a></li>
-            <li><Link href="/login" className="hover:text-ink-900 transition-colors">Sign in</Link></li>
+            <li>
+              <a
+                href="#features"
+                className="hover:text-ink-900 transition-colors"
+              >
+                Features
+              </a>
+            </li>
+            <li>
+              <a href="#how" className="hover:text-ink-900 transition-colors">
+                How it works
+              </a>
+            </li>
+            <li>
+              <a
+                href="#pricing"
+                className="hover:text-ink-900 transition-colors"
+              >
+                Pricing
+              </a>
+            </li>
+            <li>
+              <Link
+                href="/login"
+                className="hover:text-ink-900 transition-colors"
+              >
+                Sign in
+              </Link>
+            </li>
           </ul>
         </div>
         <div>
@@ -418,12 +465,18 @@ function PublicFooter() {
           </div>
           <ul className="space-y-3">
             <li>
-              <a href="mailto:eventhub@uonbieventhub.co.ke" className="hover:text-ink-900 transition-colors">
+              <a
+                href="mailto:eventhub@uonbieventhub.co.ke"
+                className="hover:text-ink-900 transition-colors"
+              >
                 eventhub@uonbieventhub.co.ke
               </a>
             </li>
             <li>
-              <a href="https://www.uonbieventhub.co.ke" className="hover:text-ink-900 transition-colors">
+              <a
+                href="https://www.uonbieventhub.co.ke"
+                className="hover:text-ink-900 transition-colors"
+              >
                 www.uonbieventhub.co.ke
               </a>
             </li>
@@ -432,7 +485,9 @@ function PublicFooter() {
       </div>
       <div className="border-t border-ink-100">
         <div className="max-w-6xl mx-auto px-6 py-5 text-xs text-ink-400 flex justify-between flex-wrap gap-2">
-          <span>© {new Date().getFullYear()} Unity of Nations. All rights reserved.</span>
+          <span>
+            © {new Date().getFullYear()} Unity of Nations. All rights reserved.
+          </span>
           <span>Plan. Manage. Connect. Succeed.</span>
         </div>
       </div>
@@ -562,60 +617,77 @@ function Step({
 
 function PlanCard({
   name,
+  tagline,
   description,
   features,
   recommended,
 }: {
   name: string;
+  tagline?: string;
   description: string;
   features: string[];
   recommended?: boolean;
 }) {
+  const dark = !!recommended;
   return (
     <div
       className={
-        recommended
-          ? "relative rounded-2xl bg-ink-900 text-white p-8 shadow-pop"
-          : "rounded-2xl bg-white p-8 ring-1 ring-ink-100"
+        dark
+          ? "relative flex flex-col rounded-2xl bg-ink-900 text-white p-8 shadow-pop"
+          : "relative flex flex-col rounded-2xl bg-white p-8 ring-1 ring-ink-100 hover:ring-ink-200 transition-shadow"
       }
     >
-      {recommended ? (
-        <div className="absolute -top-3 left-8 inline-flex items-center gap-1.5 rounded-full bg-accent text-ink-900 px-3 py-1 text-xs font-semibold">
-          <Sparkles className="h-3 w-3" />
-          Recommended
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3
+            className={`text-2xl font-semibold tracking-tight ${dark ? "text-white" : "text-ink-900"}`}
+          >
+            {name}
+          </h3>
+          <p
+            className={`mt-1 text-xs uppercase tracking-[0.15em] font-medium ${dark ? "text-accent" : "text-brand-700"}`}
+          >
+            {tagline ?? name}
+          </p>
         </div>
-      ) : null}
-      <div
-        className={
-          recommended
-            ? "text-xs uppercase tracking-[0.15em] text-accent font-semibold"
-            : "text-xs uppercase tracking-[0.15em] text-brand-700 font-semibold"
-        }
-      >
-        {name}
+        {dark ? (
+          <span className="inline-flex items-center gap-1 rounded-full bg-accent text-ink-900 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider">
+            <Sparkles className="h-3 w-3" />
+            Popular
+          </span>
+        ) : null}
       </div>
-      <p className={`mt-3 text-sm leading-relaxed ${recommended ? "text-white/70" : "text-ink-600"}`}>
+
+      <p
+        className={`mt-4 text-sm leading-relaxed ${dark ? "text-white/70" : "text-ink-600"}`}
+      >
         {description}
       </p>
-      <ul className="mt-6 space-y-3 text-sm">
+
+      <div
+        className={`mt-6 mb-6 h-px ${dark ? "bg-white/10" : "bg-ink-100"}`}
+      />
+
+      <ul className="space-y-3 text-sm flex-1">
         {features.map((f) => (
           <li key={f} className="flex items-start gap-2.5">
             <CheckCircle
-              className={`h-4 w-4 shrink-0 mt-0.5 ${recommended ? "text-accent" : "text-brand-700"}`}
+              className={`h-4 w-4 shrink-0 mt-0.5 ${dark ? "text-accent" : "text-brand-700"}`}
             />
-            <span className={recommended ? "text-white/90" : "text-ink-700"}>{f}</span>
+            <span className={dark ? "text-white/90" : "text-ink-700"}>{f}</span>
           </li>
         ))}
       </ul>
+
       <a
         href="#talk-to-us"
         className={
-          recommended
+          dark
             ? "mt-8 inline-flex items-center justify-center gap-2 w-full rounded-full bg-accent text-ink-900 px-5 py-2.5 text-sm font-medium hover:bg-accent-dark hover:text-white transition"
             : "mt-8 inline-flex items-center justify-center gap-2 w-full rounded-full bg-ink-900 text-white px-5 py-2.5 text-sm font-medium hover:bg-ink-800 transition"
         }
       >
-        Talk to us
+        Get a quote
         <ArrowRight className="h-3.5 w-3.5" />
       </a>
     </div>
