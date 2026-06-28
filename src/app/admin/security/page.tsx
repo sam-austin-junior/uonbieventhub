@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireStaff } from "@/lib/admin-scope";
 import { SecurityClient } from "./SecurityClient";
+import { PasswordChangeCard } from "./PasswordChangeCard";
 
 export default async function SecurityPage() {
   const session = await requireStaff();
@@ -21,7 +22,10 @@ export default async function SecurityPage() {
         </p>
       </header>
 
-      <SecurityClient email={me.email} enabledAt={me.totpEnabledAt?.toISOString() ?? null} />
+      <div className="space-y-6">
+        <PasswordChangeCard />
+        <SecurityClient email={me.email} enabledAt={me.totpEnabledAt?.toISOString() ?? null} />
+      </div>
     </div>
   );
 }
