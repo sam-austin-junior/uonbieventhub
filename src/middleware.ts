@@ -27,10 +27,12 @@ const PUBLIC_PREFIX = [
 
 function isEventLoginOrActivate(pathname: string) {
   // /e/<slug>/login  OR  /api/e/<slug>/activate/...  OR  /api/e/<slug>/register
+  // OR /api/e/<slug>/og — public OG image consumed by social crawlers
   return (
     /^\/e\/[^/]+\/login\/?$/.test(pathname) ||
     /^\/api\/e\/[^/]+\/activate\//.test(pathname) ||
-    /^\/api\/e\/[^/]+\/register\/?$/.test(pathname)
+    /^\/api\/e\/[^/]+\/register\/?$/.test(pathname) ||
+    /^\/api\/e\/[^/]+\/og\/?$/.test(pathname)
   );
 }
 
