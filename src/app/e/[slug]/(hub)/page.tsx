@@ -62,9 +62,9 @@ export default async function HubHomePage({ params }: { params: { slug: string }
               <Image
                 src={event.logoUrl}
                 alt={event.name}
-                width={80}
-                height={80}
-                className="h-16 w-16 sm:h-20 sm:w-20 rounded-md object-contain ring-1 ring-ink-100 bg-white mb-5"
+                width={128}
+                height={128}
+                className="h-24 w-24 sm:h-32 sm:w-32 rounded-xl object-contain ring-1 ring-ink-100 bg-white p-2 mb-6"
               />
             ) : null}
             {event.tagline ? (
