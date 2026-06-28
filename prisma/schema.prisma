@@ -474,13 +474,40 @@ model Payment {
   currency              String    @default("USD")
   status                String    @default("pending")
   description           String?
+  provider              String    @default("stripe")
+  planId                String?
   stripeSessionId       String?   @unique
   stripePaymentIntentId String?   @unique
+  flutterwaveTxRef      String?   @unique
+  flutterwaveTxId       String?
   metadata              String?
   createdAt             DateTime  @default(now())
   paidAt                DateTime?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan Plan? @relation(fields: [planId], references: [id], onDelete: SetNull)
 
   @@index([userId, createdAt])
+  @@index([planId])
+}
+
+model Plan {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  name          String
+  tagline       String?
+  description   String
+  priceCents    Int
+  currency      String   @default("USD")
+  billingPeriod String   @default("one_time")
+  recommended   Boolean  @default(false)
+  active        Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  features      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  payments Payment[]
+
+  @@index([active, sortOrder])
 }

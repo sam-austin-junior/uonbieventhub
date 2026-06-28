@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
+import { getActivePlans, formatPlanPrice, planPeriodLabel } from "@/lib/plans";
 import { Logo } from "@/components/Logo";
 import { Lockup } from "@/components/Lockup";
 import {
@@ -31,6 +32,8 @@ export default async function LandingPage() {
   const primaryCta = session
     ? { href: "/admin", label: "Open dashboard" }
     : { href: "/login", label: "Sign in" };
+
+  const plans = await getActivePlans().catch(() => []);
 
   return (
     <main className="bg-white text-ink-900 antialiased">
@@ -262,43 +265,26 @@ export default async function LandingPage() {
             </p>
           </div>
           <div className="mt-14 grid lg:grid-cols-3 gap-6 items-stretch">
-            <PlanCard
-              name="Single event"
-              tagline="One-off"
-              description="Conferences, summits and annual flagships."
-              features={[
-                "Unlimited sessions & speakers",
-                "Unlimited attendees",
-                "QR check-in & certificates",
-                "AI assistant on your programme",
-                "Email & in-app broadcasts",
-              ]}
-            />
-            <PlanCard
-              name="Team"
-              tagline="Most popular"
-              recommended
-              description="Organisations hosting multiple events per year."
-              features={[
-                "Everything in Single event",
-                "Unlimited events per year",
-                "Multiple organizer seats",
-                "Priority onboarding & support",
-                "Quarterly business review",
-              ]}
-            />
-            <PlanCard
-              name="Enterprise"
-              tagline="Tailored"
-              description="Large organisations with custom requirements."
-              features={[
-                "Everything in Team",
-                "Co-branded onboarding",
-                "Dedicated success manager",
-                "SLA on email delivery",
-                "Annual usage review",
-              ]}
-            />
+            {plans.length === 0 ? (
+              <div className="lg:col-span-3 rounded-2xl border border-dashed border-ink-200 bg-ink-50/40 p-10 text-center text-sm text-ink-500">
+                Pricing plans haven't been published yet. Check back soon, or
+                contact the team for a custom quote.
+              </div>
+            ) : (
+              plans.map((p) => (
+                <PlanCard
+                  key={p.id}
+                  planId={p.id}
+                  name={p.name}
+                  tagline={p.tagline ?? undefined}
+                  description={p.description}
+                  price={formatPlanPrice(p)}
+                  period={planPeriodLabel(p.billingPeriod)}
+                  features={p.features}
+                  recommended={p.recommended}
+                />
+              ))
+            )}
           </div>
           <p className="text-center text-sm text-ink-500 mt-10">
             Pricing is confirmed during onboarding. Academic, NGO and
@@ -616,19 +602,26 @@ function Step({
 }
 
 function PlanCard({
+  planId,
   name,
   tagline,
   description,
+  price,
+  period,
   features,
   recommended,
 }: {
+  planId: string;
   name: string;
   tagline?: string;
   description: string;
+  price: string;
+  period: string;
   features: string[];
   recommended?: boolean;
 }) {
   const dark = !!recommended;
+  const checkoutHref = `/admin/billing?plan=${encodeURIComponent(planId)}`;
   return (
     <div
       className={
@@ -658,6 +651,19 @@ function PlanCard({
         ) : null}
       </div>
 
+      <div className="mt-5 flex items-baseline gap-1.5">
+        <span
+          className={`text-4xl font-semibold tracking-tight ${dark ? "text-white" : "text-ink-900"}`}
+        >
+          {price}
+        </span>
+        {period ? (
+          <span className={`text-sm ${dark ? "text-white/60" : "text-ink-500"}`}>
+            {period}
+          </span>
+        ) : null}
+      </div>
+
       <p
         className={`mt-4 text-sm leading-relaxed ${dark ? "text-white/70" : "text-ink-600"}`}
       >
@@ -679,17 +685,17 @@ function PlanCard({
         ))}
       </ul>
 
-      <a
-        href="#talk-to-us"
+      <Link
+        href={checkoutHref}
         className={
           dark
             ? "mt-8 inline-flex items-center justify-center gap-2 w-full rounded-full bg-accent text-ink-900 px-5 py-2.5 text-sm font-medium hover:bg-accent-dark hover:text-white transition"
             : "mt-8 inline-flex items-center justify-center gap-2 w-full rounded-full bg-ink-900 text-white px-5 py-2.5 text-sm font-medium hover:bg-ink-800 transition"
         }
       >
-        Get a quote
+        Choose {name}
         <ArrowRight className="h-3.5 w-3.5" />
-      </a>
+      </Link>
     </div>
   );
 }

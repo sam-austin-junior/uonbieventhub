@@ -24,6 +24,7 @@ const PUBLIC_PREFIX = [
   "/uon-logo.png",
   "/uon-lockup.png",
   "/favicon.png",
+  "/api/billing/webhook",
 ];
 
 function isEventLoginOrActivate(pathname: string) {

@@ -23,6 +23,32 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Only organizers can renew" }, { status: 403 });
   }
 
+  const body = await req.json().catch(() => ({}));
+  const planId = typeof body?.planId === "string" ? body.planId : null;
+
+  let amount: number;
+  let currency: string;
+  let productName: string;
+  let productDescription: string;
+  let plan: { id: string; name: string; tagline: string | null } | null = null;
+
+  if (planId) {
+    const p = await prisma.plan.findUnique({ where: { id: planId } });
+    if (!p || !p.active) {
+      return NextResponse.json({ error: "Plan not found" }, { status: 404 });
+    }
+    amount = p.priceCents;
+    currency = p.currency.toLowerCase();
+    productName = `UoN Event Hub — ${p.name}`;
+    productDescription = p.tagline ?? p.description.slice(0, 120);
+    plan = { id: p.id, name: p.name, tagline: p.tagline };
+  } else {
+    amount = renewalPriceCents();
+    currency = renewalCurrency();
+    productName = "UoN Event Hub — Organizer access";
+    productDescription = "Renews your organizer access for the next term.";
+  }
+
   const stripe = getStripe();
 
   let customerId = user.stripeCustomerId;
@@ -40,16 +66,16 @@ export async function POST(req: Request) {
   }
 
   const origin = new URL(req.url).origin;
-  const amount = renewalPriceCents();
-  const currency = renewalCurrency();
 
   const payment = await prisma.payment.create({
     data: {
       userId: user.id,
+      planId: plan?.id ?? null,
+      provider: "stripe",
       amountCents: amount,
       currency: currency.toUpperCase(),
       status: "pending",
-      description: "Organizer access renewal",
+      description: plan ? `${plan.name} plan purchase` : "Organizer access renewal",
     },
   });
 
@@ -64,15 +90,20 @@ export async function POST(req: Request) {
           currency,
           unit_amount: amount,
           product_data: {
-            name: "UoN Event Hub — Organizer access",
-            description: "Renews your organizer access for the next term.",
+            name: productName,
+            description: productDescription,
           },
         },
       },
     ],
-    success_url: `${origin}/admin?billing=success`,
-    cancel_url: `${origin}/admin?billing=cancelled`,
-    metadata: { userId: user.id, paymentId: payment.id, kind: "renewal" },
+    success_url: `${origin}/admin/billing?provider=stripe&status=success`,
+    cancel_url: `${origin}/admin/billing?provider=stripe&status=cancelled`,
+    metadata: {
+      userId: user.id,
+      paymentId: payment.id,
+      kind: plan ? "plan" : "renewal",
+      ...(plan ? { planId: plan.id } : {}),
+    },
   });
 
   await prisma.payment.update({

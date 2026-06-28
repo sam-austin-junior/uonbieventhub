@@ -6,14 +6,20 @@ import {
   renewalPriceCents,
   stripeConfigured,
 } from "@/lib/stripe";
+import { flutterwaveConfigured } from "@/lib/flutterwave";
 import { CreditCard, Receipt, CheckCircle, AlertTriangle } from "lucide-react";
 import { RenewButton } from "./RenewButton";
+import { PlanCheckout } from "./PlanCheckout";
 
 export const dynamic = "force-dynamic";
 
-export default async function BillingPage() {
+export default async function BillingPage({
+  searchParams,
+}: {
+  searchParams: { plan?: string; status?: string };
+}) {
   const session = await requireStaff();
-  const [user, payments] = await Promise.all([
+  const [user, payments, selectedPlan] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.userId },
       select: { id: true, expiresAt: true, suspendedAt: true, role: true },
@@ -23,10 +29,14 @@ export default async function BillingPage() {
       orderBy: { createdAt: "desc" },
       take: 20,
     }),
+    searchParams.plan
+      ? prisma.plan.findUnique({ where: { id: searchParams.plan } })
+      : Promise.resolve(null),
   ]);
   if (!user) return null;
 
   const enabled = stripeConfigured();
+  const flwEnabled = flutterwaveConfigured();
   const priceCents = renewalPriceCents();
   const currency = renewalCurrency();
   const now = new Date();
@@ -43,6 +53,35 @@ export default async function BillingPage() {
           Renew your organizer access and review past charges.
         </p>
       </header>
+
+      {searchParams.status === "success" ? (
+        <div className="mb-6 rounded-md bg-emerald-50 ring-1 ring-emerald-100 p-4 text-sm text-emerald-800 inline-flex items-center gap-2">
+          <CheckCircle className="h-4 w-4" />
+          Payment received. Your access has been extended.
+        </div>
+      ) : null}
+
+      {selectedPlan ? (
+        <div className="mb-6">
+          <PlanCheckout
+            plan={{
+              id: selectedPlan.id,
+              name: selectedPlan.name,
+              tagline: selectedPlan.tagline,
+              description: selectedPlan.description,
+              priceCents: selectedPlan.priceCents,
+              currency: selectedPlan.currency,
+              billingPeriod: selectedPlan.billingPeriod,
+              features: selectedPlan.features
+                .split("\n")
+                .map((l) => l.trim())
+                .filter(Boolean),
+            }}
+            stripeEnabled={enabled}
+            flutterwaveEnabled={flwEnabled}
+          />
+        </div>
+      ) : null}
 
       <section className="card p-6 mb-6">
         <h2 className="font-semibold text-ink-900 inline-flex items-center gap-2">
