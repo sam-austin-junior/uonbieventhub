@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { isEmailConfigured } from "@/lib/email";
 import { SettingsForms } from "./SettingsForms";
 
+export const dynamic = "force-dynamic";
+
 export default async function PlatformSettings() {
   const [config, emailReady] = await Promise.all([
     prisma.platformConfig.upsert({

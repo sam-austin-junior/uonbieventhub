@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
 import { ExternalLink } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function AllEvents() {
   const events = await prisma.event.findMany({
     orderBy: { startDate: "asc" },

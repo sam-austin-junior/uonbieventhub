@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { Avatar } from "@/components/ui/Avatar";
 import { Activity } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 const ACTION_LABELS: Record<string, string> = {
   "organizer.create": "Organizer account created",
   "organizer.suspend": "Organizer suspended",

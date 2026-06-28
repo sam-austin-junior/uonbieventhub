@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { Avatar } from "@/components/ui/Avatar";
 import { formatDate } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export default async function AllUsers() {
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },

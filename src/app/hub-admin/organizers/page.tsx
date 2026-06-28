@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { OrganizersClient } from "./OrganizersClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function OrganizersPage() {
   const organizers = await prisma.user.findMany({
     where: { role: "ORGANIZER" },
