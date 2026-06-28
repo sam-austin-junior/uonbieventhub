@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://uonbieventhub.co.ke";
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.uonbieventhub.co.ke";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getEventBySlug } from "@/lib/event";
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://uonbieventhub.co.ke";
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.uonbieventhub.co.ke";
 
 async function resolveAliasOrRedirect(slug: string): Promise<void> {
   const alias = await prisma.slugAlias.findUnique({
