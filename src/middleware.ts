@@ -22,6 +22,7 @@ const PUBLIC_EXACT = [
 const PUBLIC_PREFIX = [
   "/uploads/",
   "/uon-logo.png",
+  "/uon-lockup.png",
   "/favicon.png",
 ];
 
