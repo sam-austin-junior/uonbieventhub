@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireStaff } from "@/lib/admin-scope";
 import { SecurityClient } from "./SecurityClient";
 import { PasswordChangeCard } from "./PasswordChangeCard";
+import { EmailChangeCard } from "./EmailChangeCard";
 
 export default async function SecurityPage() {
   const session = await requireStaff();
@@ -23,6 +24,7 @@ export default async function SecurityPage() {
       </header>
 
       <div className="space-y-6">
+        <EmailChangeCard currentEmail={me.email} />
         <PasswordChangeCard />
         <SecurityClient email={me.email} enabledAt={me.totpEnabledAt?.toISOString() ?? null} />
       </div>
