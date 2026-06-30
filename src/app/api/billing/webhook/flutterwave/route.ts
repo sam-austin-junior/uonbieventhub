@@ -6,6 +6,7 @@ import {
   verifyWebhookHash,
 } from "@/lib/flutterwave";
 import { renewalDays } from "@/lib/stripe";
+import { fulfilTicketPayment } from "@/lib/ticket-fulfilment";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -84,20 +85,24 @@ export async function POST(req: Request) {
     },
   });
 
-  // Extend the organizer's access window.
-  const now = new Date();
-  const user = await prisma.user.findUnique({
-    where: { id: payment.userId },
-    select: { expiresAt: true },
-  });
-  const base = user?.expiresAt && user.expiresAt > now ? user.expiresAt : now;
-  const nextExpiry = new Date(
-    base.getTime() + renewalDays() * 24 * 60 * 60 * 1000,
-  );
-  await prisma.user.update({
-    where: { id: payment.userId },
-    data: { expiresAt: nextExpiry, suspendedAt: null },
-  });
+  if (payment.kind === "ticket") {
+    await fulfilTicketPayment(payment.id);
+  } else {
+    // Renewal / plan: extend the organizer's access window.
+    const now = new Date();
+    const user = await prisma.user.findUnique({
+      where: { id: payment.userId },
+      select: { expiresAt: true },
+    });
+    const base = user?.expiresAt && user.expiresAt > now ? user.expiresAt : now;
+    const nextExpiry = new Date(
+      base.getTime() + renewalDays() * 24 * 60 * 60 * 1000,
+    );
+    await prisma.user.update({
+      where: { id: payment.userId },
+      data: { expiresAt: nextExpiry, suspendedAt: null },
+    });
+  }
 
   return NextResponse.json({ received: true });
 }

@@ -6,6 +6,7 @@ import { getSession } from "@/lib/auth";
 import { formatDate, formatTime, formatDateRange } from "@/lib/utils";
 import { Avatar } from "@/components/ui/Avatar";
 import { EventChatBot } from "@/components/chat/EventChatBot";
+import { checkTicketAvailability, formatTicketMoney } from "@/lib/tickets";
 import {
   Calendar,
   MapPin,
@@ -15,6 +16,7 @@ import {
   Store,
   ArrowRight,
   LogIn,
+  Ticket,
 } from "lucide-react";
 
 export default async function HubHomePage({ params }: { params: { slug: string } }) {
@@ -51,6 +53,26 @@ export default async function HubHomePage({ params }: { params: { slug: string }
         take: 5,
       })
     : [];
+
+  const tickets = await prisma.ticketType.findMany({
+    where: { eventId: event.id, active: true },
+    orderBy: [{ sortOrder: "asc" }, { priceCents: "asc" }],
+  });
+  const ticketView = tickets.map((t) => ({
+    id: t.id,
+    name: t.name,
+    description: t.description,
+    priceCents: t.priceCents,
+    currency: t.currency,
+    available: checkTicketAvailability(t).available,
+  }));
+  const alreadyRegistered = session
+    ? !!(await prisma.registration.findUnique({
+        where: { eventId_userId: { eventId: event.id, userId: session.userId } },
+        select: { id: true },
+      }))
+    : false;
+  const showTicketsSection = ticketView.length > 0 && !alreadyRegistered;
 
   return (
     <div>
@@ -108,6 +130,48 @@ export default async function HubHomePage({ params }: { params: { slug: string }
           </div>
         </div>
       </section>
+
+      {showTicketsSection ? (
+        <section className="border-b border-ink-100 bg-ink-50/40">
+          <div className="max-w-6xl mx-auto px-6 py-10">
+            <div className="flex items-end justify-between gap-4 flex-wrap mb-5">
+              <div>
+                <div className="text-xs uppercase tracking-[0.15em] text-brand-700 font-semibold inline-flex items-center gap-1.5">
+                  <Ticket className="h-3.5 w-3.5" /> Tickets
+                </div>
+                <h2 className="mt-1 text-2xl font-bold text-ink-900">Reserve your seat</h2>
+              </div>
+              <Link
+                href={`/e/${event.slug}/tickets`}
+                className="inline-flex items-center gap-2 rounded-full bg-ink-900 text-white px-5 py-2.5 text-sm font-medium hover:bg-ink-800 transition"
+              >
+                Get tickets <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {ticketView.map((t) => (
+                <div
+                  key={t.id}
+                  className="rounded-2xl bg-white ring-1 ring-ink-100 p-5"
+                >
+                  <div className="font-semibold text-ink-900">{t.name}</div>
+                  {t.description ? (
+                    <p className="mt-1 text-sm text-ink-600 line-clamp-2">{t.description}</p>
+                  ) : null}
+                  <div className="mt-4 flex items-end justify-between">
+                    <div className="text-2xl font-bold text-ink-900">
+                      {formatTicketMoney(t.priceCents, t.currency)}
+                    </div>
+                    {!t.available ? (
+                      <span className="text-xs text-red-600 font-medium">Unavailable</span>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">

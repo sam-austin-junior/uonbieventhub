@@ -16,6 +16,8 @@ import {
   ClipboardList,
   BarChart3,
   CreditCard,
+  Ticket,
+  Tag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
@@ -43,6 +45,8 @@ export function AdminSidebar({
     ? [
         { href: `/admin/events/${currentEventId}`, label: "Overview", icon: LayoutDashboard, exact: true },
         { href: `/admin/events/${currentEventId}/analytics`, label: "Analytics", icon: BarChart3, exact: false },
+        { href: `/admin/events/${currentEventId}/tickets`, label: "Tickets", icon: Ticket, exact: false },
+        { href: `/admin/events/${currentEventId}/promo-codes`, label: "Promo codes", icon: Tag, exact: false },
         { href: `/admin/events/${currentEventId}/sessions`, label: "Sessions", icon: Calendar, exact: false },
         { href: `/admin/events/${currentEventId}/speakers`, label: "Speakers", icon: Mic2, exact: false },
         { href: `/admin/events/${currentEventId}/attendees`, label: "Attendees", icon: Users, exact: false },

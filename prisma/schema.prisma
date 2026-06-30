@@ -154,6 +154,9 @@ model Event {
   announcements Announcement[]
   survey        EventSurvey?
   slugAliases   SlugAlias[]
+  ticketTypes   TicketType[]
+  promoCodes    PromoCode[]
+  payments      Payment[]
 }
 
 model SlugAlias {
@@ -224,11 +227,67 @@ model Registration {
   registeredAt DateTime  @default(now())
   checkedInAt  DateTime?
   qrToken      String    @unique @default(cuid())
+  ticketTypeId String?
+  promoCodeId  String?
+  paidCents    Int       @default(0)
+  paymentId    String?   @unique
 
-  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event      Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ticketType TicketType? @relation(fields: [ticketTypeId], references: [id], onDelete: SetNull)
+  promoCode  PromoCode?  @relation(fields: [promoCodeId], references: [id], onDelete: SetNull)
+  payment    Payment?    @relation(fields: [paymentId], references: [id], onDelete: SetNull)
 
   @@unique([eventId, userId])
+  @@index([ticketTypeId])
+  @@index([promoCodeId])
+}
+
+model TicketType {
+  id           String    @id @default(cuid())
+  eventId      String
+  name         String
+  description  String?
+  priceCents   Int       @default(0)
+  currency     String    @default("USD")
+  capacity     Int?
+  soldCount    Int       @default(0)
+  saleStartsAt DateTime?
+  saleEndsAt   DateTime?
+  sortOrder    Int       @default(0)
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  event         Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  registrations Registration[]
+  payments      Payment[]
+  promoCodes    PromoCode[]
+
+  @@index([eventId, active, sortOrder])
+}
+
+model PromoCode {
+  id            String    @id @default(cuid())
+  eventId       String
+  code          String
+  discountType  String    @default("percent")
+  discountValue Int
+  maxUses       Int?
+  usedCount     Int       @default(0)
+  validFrom     DateTime?
+  validUntil    DateTime?
+  ticketTypeId  String?
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+
+  event         Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  ticketType    TicketType?    @relation(fields: [ticketTypeId], references: [id], onDelete: SetNull)
+  registrations Registration[]
+  payments      Payment[]
+
+  @@unique([eventId, code])
+  @@index([eventId, active])
 }
 
 model SessionRegistration {
@@ -475,7 +534,11 @@ model Payment {
   status                String    @default("pending")
   description           String?
   provider              String    @default("stripe")
+  kind                  String    @default("renewal")
   planId                String?
+  eventId               String?
+  ticketTypeId          String?
+  promoCodeId           String?
   stripeSessionId       String?   @unique
   stripePaymentIntentId String?   @unique
   flutterwaveTxRef      String?   @unique
@@ -484,11 +547,17 @@ model Payment {
   createdAt             DateTime  @default(now())
   paidAt                DateTime?
 
-  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan Plan? @relation(fields: [planId], references: [id], onDelete: SetNull)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan         Plan?         @relation(fields: [planId], references: [id], onDelete: SetNull)
+  event        Event?        @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  ticketType   TicketType?   @relation(fields: [ticketTypeId], references: [id], onDelete: SetNull)
+  promoCode    PromoCode?    @relation(fields: [promoCodeId], references: [id], onDelete: SetNull)
+  registration Registration?
 
   @@index([userId, createdAt])
   @@index([planId])
+  @@index([eventId])
+  @@index([ticketTypeId])
 }
 
 model Plan {

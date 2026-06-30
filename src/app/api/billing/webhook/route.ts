@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { getStripe, renewalDays, stripeConfigured } from "@/lib/stripe";
+import { fulfilTicketPayment } from "@/lib/ticket-fulfilment";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -36,6 +37,7 @@ export async function POST(req: Request) {
       const session = event.data.object as Stripe.Checkout.Session;
       const paymentId = session.metadata?.paymentId;
       const userId = session.metadata?.userId;
+      const kind = session.metadata?.kind ?? "renewal";
       if (paymentId && userId) {
         const intentId =
           typeof session.payment_intent === "string"
@@ -50,23 +52,25 @@ export async function POST(req: Request) {
           },
         });
 
-        const now = new Date();
-        const user = await prisma.user.findUnique({
-          where: { id: userId },
-          select: { expiresAt: true },
-        });
-        const base =
-          user?.expiresAt && user.expiresAt > now ? user.expiresAt : now;
-        const nextExpiry = new Date(
-          base.getTime() + renewalDays() * 24 * 60 * 60 * 1000
-        );
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            expiresAt: nextExpiry,
-            suspendedAt: null,
-          },
-        });
+        if (kind === "ticket") {
+          await fulfilTicketPayment(paymentId);
+        } else {
+          // Renewal / plan purchase — extend organizer access window.
+          const now = new Date();
+          const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { expiresAt: true },
+          });
+          const base =
+            user?.expiresAt && user.expiresAt > now ? user.expiresAt : now;
+          const nextExpiry = new Date(
+            base.getTime() + renewalDays() * 24 * 60 * 60 * 1000,
+          );
+          await prisma.user.update({
+            where: { id: userId },
+            data: { expiresAt: nextExpiry, suspendedAt: null },
+          });
+        }
       }
     } else if (event.type === "checkout.session.expired") {
       const session = event.data.object as Stripe.Checkout.Session;
