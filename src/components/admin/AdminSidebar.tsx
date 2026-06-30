@@ -22,6 +22,7 @@ import {
   Webhook,
   Handshake,
   Send,
+  Languages,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
@@ -61,6 +62,7 @@ export function AdminSidebar({
         { href: `/admin/events/${currentEventId}/meetings`, label: "Meetings", icon: Handshake, exact: false },
         { href: `/admin/events/${currentEventId}/automations`, label: "Email automations", icon: Send, exact: false },
         { href: `/admin/events/${currentEventId}/integrations`, label: "Integrations", icon: Webhook, exact: false },
+        { href: `/admin/events/${currentEventId}/translations`, label: "Translations", icon: Languages, exact: false },
         { href: `/admin/events/${currentEventId}/survey`, label: "Post-event survey", icon: ClipboardList, exact: false },
       ]
     : [];

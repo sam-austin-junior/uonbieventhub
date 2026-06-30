@@ -5,9 +5,14 @@ import { getSession } from "@/lib/auth";
 import { getEventBySlug } from "@/lib/event";
 import { formatDate, formatTime } from "@/lib/utils";
 import { Avatar } from "@/components/ui/Avatar";
-import { Calendar, MapPin, Users, ArrowLeft, Clock, Video, Presentation, FileText } from "lucide-react";
+import { Calendar, MapPin, Users, ArrowLeft, Clock, Video, Presentation, FileText, ExternalLink, Radio } from "lucide-react";
 import { SessionRegisterButton } from "./RegisterButton";
 import { SessionEngagement } from "./SessionEngagement";
+import {
+  normaliseStreamUrl,
+  liveWindow,
+  streamProviderLabel,
+} from "@/lib/streaming";
 
 export default async function SessionDetailPage({
   params,
@@ -59,16 +64,56 @@ export default async function SessionDetailPage({
               {s.title}
             </h1>
 
-            {s.videoUrl ? (
-              <div className="mt-6 aspect-video w-full rounded-xl overflow-hidden bg-black ring-1 ring-ink-100">
-                <iframe
-                  src={s.videoUrl}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            ) : null}
+            {s.videoUrl ? (() => {
+              const stream = normaliseStreamUrl(s.videoUrl);
+              const isJoinable = liveWindow(s.startTime, s.endTime);
+              if (!stream) return null;
+              return (
+                <div className="mt-6 space-y-3">
+                  {stream.embedUrl ? (
+                    <div className="aspect-video w-full rounded-xl overflow-hidden bg-black ring-1 ring-ink-100">
+                      <iframe
+                        src={stream.embedUrl}
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                        allowFullScreen
+                      />
+                    </div>
+                  ) : (
+                    <div className="aspect-video w-full rounded-xl bg-gradient-to-br from-ink-900 to-brand-900 text-white flex flex-col items-center justify-center p-6 ring-1 ring-ink-100">
+                      <Radio className="h-10 w-10 text-accent mb-3" />
+                      <div className="text-sm uppercase tracking-[0.2em] text-accent">
+                        {streamProviderLabel(stream.provider)}
+                      </div>
+                      <p className="mt-2 text-sm text-white/70 text-center max-w-sm">
+                        This session streams via {streamProviderLabel(stream.provider)}. Open in a new tab to join.
+                      </p>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <div className="inline-flex items-center gap-2 text-xs text-ink-500">
+                      <Video className="h-3.5 w-3.5" />
+                      {streamProviderLabel(stream.provider)}
+                      {isJoinable && stream.isLive ? (
+                        <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-red-50 text-red-700 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
+                          <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                          Live now
+                        </span>
+                      ) : null}
+                    </div>
+                    <a
+                      href={stream.joinUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full bg-ink-900 text-white px-4 py-2 text-xs font-medium hover:bg-ink-800 transition"
+                    >
+                      {stream.isLive ? "Join live stream" : "Open external"}
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
+                </div>
+              );
+            })() : null}
 
             <div className="mt-8">
               <h2 className="text-xs uppercase tracking-[0.2em] text-brand-700 font-semibold">

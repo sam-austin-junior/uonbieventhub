@@ -14,6 +14,7 @@ const PUBLIC_EXACT = [
   "/api/auth/login",
   "/api/auth/forgot",
   "/api/auth/reset",
+  "/api/locale",
   "/manifest.webmanifest",
   "/sitemap.xml",
   "/robots.txt",

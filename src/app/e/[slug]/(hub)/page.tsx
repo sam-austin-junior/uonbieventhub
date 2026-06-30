@@ -6,7 +6,9 @@ import { getSession } from "@/lib/auth";
 import { formatDate, formatTime, formatDateRange } from "@/lib/utils";
 import { Avatar } from "@/components/ui/Avatar";
 import { EventChatBot } from "@/components/chat/EventChatBot";
+import { LocalePicker } from "@/components/event/LocalePicker";
 import { checkTicketAvailability, formatTicketMoney } from "@/lib/tickets";
+import { applyEventTranslation } from "@/lib/i18n";
 import {
   Calendar,
   MapPin,
@@ -31,6 +33,8 @@ export default async function HubHomePage({ params }: { params: { slug: string }
     },
   });
   if (!event) notFound();
+
+  const localised = await applyEventTranslation(event);
 
   const featured = await prisma.session.findMany({
     where: { eventId: event.id, isFeatured: true },
@@ -76,26 +80,34 @@ export default async function HubHomePage({ params }: { params: { slug: string }
 
   return (
     <div>
-      <section className="bg-white border-b border-ink-100">
+      <section className="bg-white border-b border-ink-100 relative">
+        {localised.supportedLocales.length > 1 ? (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-4 flex justify-end">
+            <LocalePicker
+              supportedLocales={localised.supportedLocales}
+              activeLocale={localised.activeLocale}
+            />
+          </div>
+        ) : null}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14 grid lg:grid-cols-[5fr_6fr] gap-8 lg:gap-12 items-center">
           {/* Left: event brand block */}
           <div className="min-w-0">
             {event.logoUrl ? (
               <Image
                 src={event.logoUrl}
-                alt={event.name}
+                alt={localised.name}
                 width={128}
                 height={128}
                 className="h-24 w-24 sm:h-32 sm:w-32 rounded-xl object-contain ring-1 ring-ink-100 bg-white p-2 mb-6"
               />
             ) : null}
-            {event.tagline ? (
+            {localised.tagline ? (
               <div className="text-brand-700 text-xs sm:text-sm font-semibold uppercase tracking-[0.15em] mb-3">
-                {event.tagline}
+                {localised.tagline}
               </div>
             ) : null}
             <h1 className="text-3xl sm:text-5xl font-bold leading-[1.05] text-ink-900">
-              {event.name}
+              {localised.name}
             </h1>
             <div className="mt-5 flex flex-col gap-2 text-sm sm:text-base text-ink-600">
               <span className="inline-flex items-center gap-2">
@@ -104,10 +116,10 @@ export default async function HubHomePage({ params }: { params: { slug: string }
                   {formatDate(event.startDate)} – {formatDate(event.endDate)}
                 </span>
               </span>
-              {event.venue ? (
+              {localised.venue ? (
                 <span className="inline-flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-accent" />
-                  <span className="font-medium text-accent">{event.venue}</span>
+                  <span className="font-medium text-accent">{localised.venue}</span>
                 </span>
               ) : null}
             </div>
@@ -177,7 +189,7 @@ export default async function HubHomePage({ params }: { params: { slug: string }
         <div className="lg:col-span-2 space-y-8">
           <section>
             <h2 className="text-xl font-semibold text-ink-900 mb-3">About this event</h2>
-            <p className="text-ink-700 leading-relaxed">{event.description}</p>
+            <p className="text-ink-700 leading-relaxed">{localised.description}</p>
           </section>
 
           {featured.length > 0 ? (
