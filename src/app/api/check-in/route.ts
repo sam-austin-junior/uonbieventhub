@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { fireWebhook } from "@/lib/webhooks";
+import { triggerAutomation, eventVars } from "@/lib/automations";
 
 export async function POST(req: Request) {
   const session = await getSession();
@@ -37,6 +39,28 @@ export async function POST(req: Request) {
     where: { id: reg.id },
     data: { checkedInAt: new Date() },
   });
+
+  // Fire-and-forget integrations.
+  fireWebhook("registration.checked_in", {
+    eventId: reg.event.id,
+    attendeeEmail: reg.user.email,
+    attendeeName: reg.user.name,
+    checkedInAt: updated.checkedInAt?.toISOString(),
+  }).catch(() => {});
+  (async () => {
+    const fullEvent = await prisma.event.findUnique({
+      where: { id: reg.event.id },
+      select: { id: true, slug: true, name: true, startDate: true, endDate: true, venue: true },
+    });
+    if (fullEvent) {
+      await triggerAutomation(
+        "registration.checked_in",
+        fullEvent.id,
+        reg.user.email,
+        { ...eventVars(fullEvent), attendee_name: reg.user.name },
+      );
+    }
+  })().catch(() => {});
 
   return NextResponse.json({
     ok: true,

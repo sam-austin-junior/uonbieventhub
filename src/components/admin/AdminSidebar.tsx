@@ -19,6 +19,9 @@ import {
   Ticket,
   Tag,
   Radio,
+  Webhook,
+  Handshake,
+  Send,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
@@ -55,6 +58,9 @@ export function AdminSidebar({
         { href: `/admin/events/${currentEventId}/pages`, label: "Custom Pages", icon: FileText, exact: false },
         { href: `/admin/events/${currentEventId}/announcements`, label: "Announcements", icon: Megaphone, exact: false },
         { href: `/admin/events/${currentEventId}/engagement`, label: "Live engagement", icon: Radio, exact: false },
+        { href: `/admin/events/${currentEventId}/meetings`, label: "Meetings", icon: Handshake, exact: false },
+        { href: `/admin/events/${currentEventId}/automations`, label: "Email automations", icon: Send, exact: false },
+        { href: `/admin/events/${currentEventId}/integrations`, label: "Integrations", icon: Webhook, exact: false },
         { href: `/admin/events/${currentEventId}/survey`, label: "Post-event survey", icon: ClipboardList, exact: false },
       ]
     : [];

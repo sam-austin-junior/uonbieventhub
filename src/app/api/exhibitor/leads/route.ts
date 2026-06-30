@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { fireWebhook } from "@/lib/webhooks";
 
 export const runtime = "nodejs";
 
@@ -81,6 +82,16 @@ export async function POST(req: Request) {
         : undefined,
     },
   });
+
+  fireWebhook("lead.captured", {
+    eventId: exhibitor.eventId,
+    exhibitorId: exhibitor.id,
+    exhibitorName: exhibitor.name,
+    attendeeEmail: reg.user.email,
+    attendeeName: reg.user.name,
+    capturedByEmail: session.email,
+    notes: parsed.data.notes ?? null,
+  }).catch(() => {});
 
   return NextResponse.json({
     lead: {

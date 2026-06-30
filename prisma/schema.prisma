@@ -128,6 +128,8 @@ model User {
   capturedLeads         Lead[]                @relation("LeadCapturer")
   pushSubscriptions     PushSubscription[]
   waitlistEntries       WaitlistEntry[]
+  meetingsRequested     MeetingRequest[]      @relation("MeetingRequester")
+  meetingsReceived      MeetingRequest[]      @relation("MeetingRecipient")
 }
 
 model Event {
@@ -148,26 +150,29 @@ model Event {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
-  organizer     User                @relation("EventOrganizer", fields: [organizerId], references: [id])
-  sessions      Session[]
-  speakers      Speaker[]
-  exhibitors    Exhibitor[]
-  pages         CustomPage[]
-  registrations Registration[]
-  discussions   Discussion[]
-  notifications Notification[]
-  knowledgeBase EventKnowledgeBase?
-  chatMessages  ChatMessage[]
-  invites       AttendeeInvite[]
-  announcements Announcement[]
-  survey        EventSurvey?
-  slugAliases   SlugAlias[]
-  ticketTypes   TicketType[]
-  promoCodes    PromoCode[]
-  payments      Payment[]
-  polls         Poll[]
-  questions     Question[]
-  waitlist      WaitlistEntry[]
+  organizer        User                @relation("EventOrganizer", fields: [organizerId], references: [id])
+  sessions         Session[]
+  speakers         Speaker[]
+  exhibitors       Exhibitor[]
+  pages            CustomPage[]
+  registrations    Registration[]
+  discussions      Discussion[]
+  notifications    Notification[]
+  knowledgeBase    EventKnowledgeBase?
+  chatMessages     ChatMessage[]
+  invites          AttendeeInvite[]
+  announcements    Announcement[]
+  survey           EventSurvey?
+  slugAliases      SlugAlias[]
+  ticketTypes      TicketType[]
+  promoCodes       PromoCode[]
+  payments         Payment[]
+  polls            Poll[]
+  questions        Question[]
+  waitlist         WaitlistEntry[]
+  webhooks         Webhook[]
+  meetings         MeetingRequest[]
+  emailAutomations EmailAutomation[]
 }
 
 model SlugAlias {
@@ -744,4 +749,57 @@ model WaitlistEntry {
   @@unique([ticketTypeId, userId])
   @@index([ticketTypeId, status, position])
   @@index([eventId])
+}
+
+model Webhook {
+  id              String    @id @default(cuid())
+  eventId         String?
+  url             String
+  secret          String
+  events          String
+  active          Boolean   @default(true)
+  lastDeliveredAt DateTime?
+  lastError       String?
+  createdAt       DateTime  @default(now())
+
+  event Event? @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId, active])
+}
+
+model MeetingRequest {
+  id            String    @id @default(cuid())
+  eventId       String
+  requesterId   String
+  recipientId   String
+  proposedStart DateTime
+  proposedEnd   DateTime
+  status        String    @default("pending")
+  location      String?
+  message       String?
+  createdAt     DateTime  @default(now())
+  respondedAt   DateTime?
+
+  event     Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  requester User  @relation("MeetingRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  recipient User  @relation("MeetingRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([eventId, status])
+  @@index([requesterId])
+  @@index([recipientId])
+}
+
+model EmailAutomation {
+  id        String   @id @default(cuid())
+  eventId   String
+  trigger   String
+  enabled   Boolean  @default(false)
+  subject   String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, trigger])
 }

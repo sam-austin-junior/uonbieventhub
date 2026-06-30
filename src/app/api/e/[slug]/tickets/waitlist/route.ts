@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { fireWebhook } from "@/lib/webhooks";
+import { triggerAutomation, eventVars } from "@/lib/automations";
 
 export const runtime = "nodejs";
 
@@ -97,6 +99,28 @@ export async function POST(
       position,
     },
   });
+
+  fireWebhook("waitlist.joined", {
+    eventId: event.id,
+    attendeeEmail: session.email,
+    attendeeName: session.name,
+    ticketName: ticket.name,
+    position,
+  }).catch(() => {});
+  (async () => {
+    const fullEvent = await prisma.event.findUnique({
+      where: { id: event.id },
+      select: { id: true, slug: true, name: true, startDate: true, endDate: true, venue: true },
+    });
+    if (fullEvent) {
+      await triggerAutomation(
+        "waitlist.joined",
+        fullEvent.id,
+        session.email,
+        { ...eventVars(fullEvent), attendee_name: session.name },
+      );
+    }
+  })().catch(() => {});
 
   return NextResponse.json({ ok: true, position });
 }

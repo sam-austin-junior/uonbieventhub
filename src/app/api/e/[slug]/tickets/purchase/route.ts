@@ -12,6 +12,8 @@ import {
   createStandardCharge,
 } from "@/lib/flutterwave";
 import { getStripe, stripeConfigured } from "@/lib/stripe";
+import { fireWebhook } from "@/lib/webhooks";
+import { triggerAutomation, eventVars } from "@/lib/automations";
 
 export const runtime = "nodejs";
 
@@ -119,6 +121,29 @@ export async function POST(
       }
       return reg;
     });
+
+    // Fire-and-forget integrations.
+    fireWebhook("registration.created", {
+      eventId: event.id,
+      attendeeEmail: user.email,
+      attendeeName: user.name,
+      ticketName: ticket.name,
+    }).catch(() => {});
+    (async () => {
+      const fullEvent = await prisma.event.findUnique({
+        where: { id: event.id },
+        select: { id: true, slug: true, name: true, startDate: true, endDate: true, venue: true },
+      });
+      if (fullEvent) {
+        await triggerAutomation(
+          "registration.confirmation",
+          fullEvent.id,
+          user.email,
+          { ...eventVars(fullEvent), attendee_name: user.name },
+        );
+      }
+    })().catch(() => {});
+
     return NextResponse.json({
       free: true,
       registrationId: registration.id,
