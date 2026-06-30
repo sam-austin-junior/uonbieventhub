@@ -16,6 +16,7 @@ import {
   BarChart3,
   Wallet,
   KeyRound,
+  Building2,
 } from "lucide-react";
 
 export function HubAdminSidebar({ user }: { user: { name: string; role: string } }) {
@@ -24,6 +25,7 @@ export function HubAdminSidebar({ user }: { user: { name: string; role: string }
     { href: "/hub-admin", label: "Overview", icon: LayoutDashboard, exact: true },
     { href: "/hub-admin/analytics", label: "Analytics", icon: BarChart3 },
     { href: "/hub-admin/organizers", label: "Organizers", icon: UserCog },
+    { href: "/hub-admin/agencies", label: "Agencies", icon: Building2 },
     { href: "/hub-admin/events", label: "All events", icon: CalendarRange },
     { href: "/hub-admin/users", label: "All users", icon: Users },
     { href: "/hub-admin/audit", label: "Audit log", icon: Activity },

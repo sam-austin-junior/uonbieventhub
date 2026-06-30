@@ -12,11 +12,17 @@ export function EventLoginCard({
   eventName,
   eventLogoUrl,
   attendeeMode,
+  agencyBrand,
 }: {
   slug: string;
   eventName: string;
   eventLogoUrl: string | null;
   attendeeMode: "OPEN" | "INVITE_ONLY";
+  agencyBrand?: {
+    name: string;
+    logoUrl: string | null;
+    website: string | null;
+  } | null;
 }) {
   const router = useRouter();
   const [step, setStep] = useState<Step>(attendeeMode === "OPEN" ? "open-register" : "identify");
@@ -241,11 +247,44 @@ export function EventLoginCard({
 
       <div className="mt-8 pt-6 border-t border-ink-100 flex flex-col items-center gap-2">
         <div className="text-[10px] uppercase tracking-[0.15em] text-ink-400">Powered by</div>
-        <Lockup width={140} />
+        {agencyBrand ? (
+          <AgencyBrandMark brand={agencyBrand} />
+        ) : (
+          <Lockup width={140} />
+        )}
         <div className="mt-1 text-xs text-ink-400">© {new Date().getFullYear()}</div>
       </div>
     </div>
   );
+}
+
+function AgencyBrandMark({
+  brand,
+}: {
+  brand: { name: string; logoUrl: string | null; website: string | null };
+}) {
+  const content = (
+    <div className="flex items-center gap-2.5">
+      {brand.logoUrl ? (
+        <Image
+          src={brand.logoUrl}
+          alt={brand.name}
+          width={28}
+          height={28}
+          className="h-7 w-7 rounded object-contain bg-white ring-1 ring-ink-100"
+        />
+      ) : null}
+      <span className="text-sm font-semibold text-ink-900">{brand.name}</span>
+    </div>
+  );
+  if (brand.website) {
+    return (
+      <a href={brand.website} target="_blank" rel="noopener noreferrer">
+        {content}
+      </a>
+    );
+  }
+  return content;
 }
 
 function Field({

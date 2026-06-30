@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { getEventBySlug, checkEventAvailability } from "@/lib/event";
+import { getEventAgencyBrand } from "@/lib/agency-brand";
 import { EventLoginCard } from "./EventLoginCard";
 import { EventUnavailable } from "@/components/event/EventUnavailable";
 
@@ -56,6 +57,7 @@ export default async function EventLoginPage({
         eventName={event.name}
         eventLogoUrl={event.logoUrl}
         attendeeMode={event.attendeeMode}
+        agencyBrand={await getEventAgencyBrand(event.organizerId)}
       />
     </main>
   );
