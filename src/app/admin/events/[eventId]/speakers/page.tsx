@@ -15,6 +15,7 @@ export default async function AdminSpeakersPage({ params }: { params: { eventId:
   const rows = speakers.map((s) => ({
     id: s.id,
     name: s.name,
+    email: s.email,
     jobTitle: s.jobTitle,
     organization: s.organization,
     bio: s.bio,

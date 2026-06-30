@@ -382,3 +382,91 @@ docker compose down -v           # stop + wipe the volume (fresh DB next time)
 ```
 
 After a `-v` wipe, re-run `npx prisma migrate dev --name init` and `npm run db:seed`.
+
+---
+
+## Deploying the v2 feature set
+
+A run of recent sprints added 10 days of new features on top of the original
+hub: ticketing, polls, Q&A, speaker portal, exhibitor leads, PWA, waitlists,
+CRM webhooks, meetings, email automations, AI matchmaker, streaming, multi-
+language, page builder, white-label agencies. Before any of them work in
+production, apply the pending migrations and set the new env vars.
+
+### 1. Apply all pending migrations
+
+```bash
+npm run db:deploy
+```
+
+This applies them in chronological order:
+
+| Order | Migration | What it unlocks |
+|---|---|---|
+| 1 | `20260628000000_plans_and_provider` | Plans CRUD + Flutterwave |
+| 2 | `20260629000000_tickets_and_promos` | Ticket types, promo codes, waitlist FK |
+| 3 | `20260630000000_polls_and_qna` | Live polls + Q&A |
+| 4 | `20260701000000_speaker_portal_leads_pwa_waitlist` | Speaker portal, exhibitor leads, push, waitlist |
+| 5 | `20260702000000_webhooks_meetings_automations` | CRM webhooks, meetings, email automations |
+| 6 | `20260703000000_networking_matches` | AI networking matches cache |
+| 7 | `20260704000000_event_translations` | Multi-language event sites |
+| 8 | `20260705000000_page_blocks` | Custom event website builder |
+| 9 | `20260706000000_agencies` | White-label agency mode |
+
+### 2. New env vars
+
+Add these to your Vercel project (or `.env`) — see `.env.example` for full
+docs. Everything is optional; features stay off until their key is set.
+
+| Env var | Used by |
+|---|---|
+| `FLW_SECRET_KEY`, `FLW_WEBHOOK_HASH` | Flutterwave checkout for plans + tickets |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` | Web Push notifications via the PWA |
+| `STRIPE_*` (already listed above) | Plan checkout, ticket purchase fallback |
+| `GROQ_API_KEY` (already listed above) | AI chatbot + AI networking matcher |
+| `RESEND_API_KEY` (already listed above) | Email automations, speaker/exhibitor invites, waitlist notifications, registration confirmations |
+
+Generate VAPID keys with `npx web-push generate-vapid-keys`.
+
+### 3. Register webhooks with payment providers
+
+- **Stripe** — `https://<your-domain>/api/billing/webhook` (events:
+  `checkout.session.completed`, `checkout.session.expired`,
+  `payment_intent.payment_failed`)
+- **Flutterwave** — `https://<your-domain>/api/billing/webhook/flutterwave`
+  with the same Secret Hash you put in `FLW_WEBHOOK_HASH`
+
+### 4. v2 production checklist
+
+- [ ] All 9 migrations applied (`npm run db:deploy` returns "No pending migrations")
+- [ ] Visit `/hub-admin/pricing` — three seed plans are present (Single event / Team / Enterprise)
+- [ ] Visit `/hub-admin/agencies` — list loads (empty is fine)
+- [ ] `/admin/events/<id>/integrations` saves a test webhook to `https://webhook.site/` and the test delivery shows in their dashboard
+- [ ] `/admin/events/<id>/automations` shows all six trigger templates
+- [ ] `/admin/events/<id>/translations` lets you add a non-default locale
+- [ ] `/admin/events/<id>/pages/<id>/builder` loads and saves blocks
+- [ ] `/e/<slug>/tickets` shows configured ticket types
+- [ ] `/speaker` and `/exhibitor` redirect to login when signed out
+- [ ] One test ticket purchase via Stripe sandbox or Flutterwave test mode completes end-to-end (payment → webhook → Registration row → confirmation email)
+
+### 5. New surfaces to know about
+
+| URL | Audience |
+|---|---|
+| `/hub-admin/pricing` | Superadmin — manage plans |
+| `/hub-admin/agencies` | Superadmin — manage white-label partners |
+| `/admin/events/<id>/tickets` | Organizer — ticket types per event |
+| `/admin/events/<id>/promo-codes` | Organizer |
+| `/admin/events/<id>/engagement` | Organizer — live poll + Q&A control board |
+| `/admin/events/<id>/integrations` | Organizer — webhooks |
+| `/admin/events/<id>/meetings` | Organizer — meeting overview |
+| `/admin/events/<id>/automations` | Organizer — email templates per trigger |
+| `/admin/events/<id>/translations` | Organizer |
+| `/admin/events/<id>/pages/<id>/builder` | Organizer — drag-build page from blocks |
+| `/speaker` | Speakers — edit profile, upload slides |
+| `/exhibitor` | Booth staff — QR scanner + CSV export |
+| `/agency` | Agency members — overview of their stable of events |
+| `/e/<slug>/tickets` | Attendee — buy a ticket |
+| `/e/<slug>/meetings` | Attendee — request/respond to 1-to-1 meetings |
+| `/admin/security` | All staff — change password / email / 2FA |
+

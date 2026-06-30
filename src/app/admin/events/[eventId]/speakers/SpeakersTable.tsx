@@ -4,11 +4,12 @@ import { useRouter } from "next/navigation";
 import { Modal, ConfirmDialog } from "@/components/ui/Modal";
 import { Avatar } from "@/components/ui/Avatar";
 import { FileUpload } from "@/components/ui/FileUpload";
-import { Pencil, Trash2, Plus, Star } from "lucide-react";
+import { Pencil, Trash2, Plus, Star, Mail, Send } from "lucide-react";
 
 type Row = {
   id: string;
   name: string;
+  email: string | null;
   jobTitle: string | null;
   organization: string | null;
   bio: string | null;
@@ -23,6 +24,7 @@ function emptyForm(): Row {
   return {
     id: "",
     name: "",
+    email: "",
     jobTitle: "",
     organization: "",
     bio: "",
@@ -53,6 +55,7 @@ export function SpeakersTable({ eventId, rows }: { eventId: string; rows: Row[] 
       : `/api/admin/speakers/${editing.id}`;
     const payload = {
       name: editing.name,
+      email: editing.email || null,
       jobTitle: editing.jobTitle || null,
       organization: editing.organization || null,
       bio: editing.bio || null,
@@ -74,6 +77,17 @@ export function SpeakersTable({ eventId, rows }: { eventId: string; rows: Row[] 
     }
     setEditing(null);
     startTransition(() => router.refresh());
+  }
+
+  async function sendInvite(row: Row) {
+    setError(null);
+    const res = await fetch(`/api/admin/speakers/${row.id}/invite`, { method: "POST" });
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      setError(d.error ?? "Could not send invite");
+      return;
+    }
+    alert(`Portal invite sent to ${row.email}.`);
   }
 
   async function destroy(row: Row) {
@@ -128,6 +142,16 @@ export function SpeakersTable({ eventId, rows }: { eventId: string; rows: Row[] 
                 </td>
                 <td className="px-5 py-3 text-right">
                   <div className="inline-flex gap-1">
+                    {s.email ? (
+                      <button
+                        onClick={() => sendInvite(s)}
+                        className="p-1.5 rounded hover:bg-brand-50 text-brand-700"
+                        aria-label="Send portal invite"
+                        title={`Email ${s.email} with a link to /speaker`}
+                      >
+                        <Send className="h-4 w-4" />
+                      </button>
+                    ) : null}
                     <button
                       onClick={() => setEditing({ ...s })}
                       className="p-1.5 rounded hover:bg-brand-50 text-brand-700"
@@ -168,6 +192,23 @@ export function SpeakersTable({ eventId, rows }: { eventId: string; rows: Row[] 
                 required
                 className="input"
               />
+            </div>
+            <div>
+              <label className="label inline-flex items-center gap-1.5">
+                <Mail className="h-3.5 w-3.5 text-ink-400" />
+                Email (optional)
+              </label>
+              <input
+                type="email"
+                value={editing.email ?? ""}
+                onChange={(e) => setEditing({ ...editing, email: e.target.value })}
+                className="input"
+                placeholder="speaker@example.com"
+              />
+              <p className="mt-1 text-xs text-ink-500">
+                Needed if you want to send them a link to the speaker portal
+                where they can edit their bio and upload slides.
+              </p>
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
