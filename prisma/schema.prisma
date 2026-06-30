@@ -120,6 +120,9 @@ model User {
   auditEntries          AuditLog[]            @relation("AuditActor")
   surveyResponses       EventSurveyResponse[]
   payments              Payment[]
+  pollVotes             PollVote[]
+  questionsAsked        Question[]
+  questionUpvotes       QuestionUpvote[]
 }
 
 model Event {
@@ -157,6 +160,8 @@ model Event {
   ticketTypes   TicketType[]
   promoCodes    PromoCode[]
   payments      Payment[]
+  polls         Poll[]
+  questions     Question[]
 }
 
 model SlugAlias {
@@ -188,8 +193,90 @@ model Session {
   event         Event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
   speakers      SessionSpeaker[]
   registrations SessionRegistration[]
+  polls         Poll[]
+  questions     Question[]
 
   @@index([eventId, startTime])
+}
+
+model Poll {
+  id             String    @id @default(cuid())
+  sessionId      String
+  eventId        String
+  question       String
+  allowMultiple  Boolean   @default(false)
+  isOpen         Boolean   @default(false)
+  resultsVisible Boolean   @default(false)
+  sortOrder      Int       @default(0)
+  createdAt      DateTime  @default(now())
+  closedAt       DateTime?
+
+  session Session      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  event   Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  options PollOption[]
+  votes   PollVote[]
+
+  @@index([sessionId, sortOrder])
+  @@index([eventId])
+}
+
+model PollOption {
+  id        String @id @default(cuid())
+  pollId    String
+  label     String
+  sortOrder Int    @default(0)
+
+  poll  Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes PollVote[]
+
+  @@index([pollId])
+}
+
+model PollVote {
+  id        String   @id @default(cuid())
+  pollId    String
+  optionId  String
+  userId    String
+  createdAt DateTime @default(now())
+
+  poll   Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  option PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([pollId, userId, optionId])
+  @@index([pollId])
+}
+
+model Question {
+  id        String   @id @default(cuid())
+  sessionId String
+  eventId   String
+  userId    String
+  text      String
+  answered  Boolean  @default(false)
+  hidden    Boolean  @default(false)
+  pinned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  session Session          @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  event   Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  upvotes QuestionUpvote[]
+
+  @@index([sessionId, hidden, pinned, createdAt])
+  @@index([eventId])
+}
+
+model QuestionUpvote {
+  questionId String
+  userId     String
+  createdAt  DateTime @default(now())
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([questionId, userId])
+  @@index([questionId])
 }
 
 model Speaker {

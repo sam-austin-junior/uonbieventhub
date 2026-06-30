@@ -18,6 +18,7 @@ import {
   CreditCard,
   Ticket,
   Tag,
+  Radio,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
@@ -53,6 +54,7 @@ export function AdminSidebar({
         { href: `/admin/events/${currentEventId}/exhibitors`, label: "Exhibitors", icon: Store, exact: false },
         { href: `/admin/events/${currentEventId}/pages`, label: "Custom Pages", icon: FileText, exact: false },
         { href: `/admin/events/${currentEventId}/announcements`, label: "Announcements", icon: Megaphone, exact: false },
+        { href: `/admin/events/${currentEventId}/engagement`, label: "Live engagement", icon: Radio, exact: false },
         { href: `/admin/events/${currentEventId}/survey`, label: "Post-event survey", icon: ClipboardList, exact: false },
       ]
     : [];

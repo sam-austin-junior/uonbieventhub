@@ -7,6 +7,7 @@ import { formatDate, formatTime } from "@/lib/utils";
 import { Avatar } from "@/components/ui/Avatar";
 import { Calendar, MapPin, Users, ArrowLeft, Clock, Video } from "lucide-react";
 import { SessionRegisterButton } from "./RegisterButton";
+import { SessionEngagement } from "./SessionEngagement";
 
 export default async function SessionDetailPage({
   params,
@@ -77,6 +78,8 @@ export default async function SessionDetailPage({
                 {s.description}
               </p>
             </div>
+
+            {session ? <SessionEngagement sessionId={s.id} /> : null}
 
             {s.speakers.length > 0 ? (
               <div className="mt-10">
