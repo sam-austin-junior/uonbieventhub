@@ -130,6 +130,8 @@ model User {
   waitlistEntries       WaitlistEntry[]
   meetingsRequested     MeetingRequest[]      @relation("MeetingRequester")
   meetingsReceived      MeetingRequest[]      @relation("MeetingRecipient")
+  networkingMatches     NetworkingMatch[]     @relation("NetworkingMatchOwner")
+  networkingMatchedBy   NetworkingMatch[]     @relation("NetworkingMatchTarget")
 }
 
 model Event {
@@ -150,29 +152,30 @@ model Event {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
-  organizer        User                @relation("EventOrganizer", fields: [organizerId], references: [id])
-  sessions         Session[]
-  speakers         Speaker[]
-  exhibitors       Exhibitor[]
-  pages            CustomPage[]
-  registrations    Registration[]
-  discussions      Discussion[]
-  notifications    Notification[]
-  knowledgeBase    EventKnowledgeBase?
-  chatMessages     ChatMessage[]
-  invites          AttendeeInvite[]
-  announcements    Announcement[]
-  survey           EventSurvey?
-  slugAliases      SlugAlias[]
-  ticketTypes      TicketType[]
-  promoCodes       PromoCode[]
-  payments         Payment[]
-  polls            Poll[]
-  questions        Question[]
-  waitlist         WaitlistEntry[]
-  webhooks         Webhook[]
-  meetings         MeetingRequest[]
-  emailAutomations EmailAutomation[]
+  organizer         User                @relation("EventOrganizer", fields: [organizerId], references: [id])
+  sessions          Session[]
+  speakers          Speaker[]
+  exhibitors        Exhibitor[]
+  pages             CustomPage[]
+  registrations     Registration[]
+  discussions       Discussion[]
+  notifications     Notification[]
+  knowledgeBase     EventKnowledgeBase?
+  chatMessages      ChatMessage[]
+  invites           AttendeeInvite[]
+  announcements     Announcement[]
+  survey            EventSurvey?
+  slugAliases       SlugAlias[]
+  ticketTypes       TicketType[]
+  promoCodes        PromoCode[]
+  payments          Payment[]
+  polls             Poll[]
+  questions         Question[]
+  waitlist          WaitlistEntry[]
+  webhooks          Webhook[]
+  meetings          MeetingRequest[]
+  emailAutomations  EmailAutomation[]
+  networkingMatches NetworkingMatch[]
 }
 
 model SlugAlias {
@@ -802,4 +805,21 @@ model EmailAutomation {
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@unique([eventId, trigger])
+}
+
+model NetworkingMatch {
+  id          String   @id @default(cuid())
+  eventId     String
+  userId      String
+  matchUserId String
+  score       Int
+  reason      String
+  generatedAt DateTime @default(now())
+
+  event     Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User  @relation("NetworkingMatchOwner", fields: [userId], references: [id], onDelete: Cascade)
+  matchUser User  @relation("NetworkingMatchTarget", fields: [matchUserId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId, matchUserId])
+  @@index([eventId, userId, score])
 }

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { Avatar } from "@/components/ui/Avatar";
 import { ConnectButton } from "@/components/event/ConnectButton";
+import { NetworkingRecommendations } from "@/components/event/NetworkingRecommendations";
 import { Search } from "lucide-react";
 
 export default async function AttendeesPage({
@@ -70,6 +71,12 @@ export default async function AttendeesPage({
           <button className="btn-primary">Filter</button>
         </form>
       </header>
+
+      {session ? (
+        <div className="mb-6">
+          <NetworkingRecommendations slug={event.slug} />
+        </div>
+      ) : null}
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {regs.map(({ user: u }) => (
