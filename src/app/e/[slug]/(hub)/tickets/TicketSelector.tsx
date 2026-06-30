@@ -19,6 +19,7 @@ type TicketView = {
   remaining: number | null;
   available: boolean;
   unavailableReason: string | null;
+  alreadyOnWaitlist?: boolean;
 };
 
 export function TicketSelector({
@@ -149,8 +150,15 @@ export function TicketSelector({
                     <p className="mt-1 text-sm text-ink-600">{t.description}</p>
                   ) : null}
                   {!t.available ? (
-                    <p className="mt-2 text-xs font-medium text-red-600">
-                      {labelFor(t.unavailableReason)}
+                    <p className="mt-2 text-xs font-medium text-red-600 inline-flex items-center gap-2">
+                      <span>{labelFor(t.unavailableReason)}</span>
+                      {t.unavailableReason === "SOLD_OUT" ? (
+                        <WaitlistButton
+                          slug={slug}
+                          ticketId={t.id}
+                          alreadyOn={!!t.alreadyOnWaitlist}
+                        />
+                      ) : null}
                     </p>
                   ) : t.remaining !== null && t.remaining <= 10 ? (
                     <p className="mt-2 text-xs font-medium text-amber-700">
@@ -333,4 +341,60 @@ function formatMoney(cents: number, currency: string) {
   } catch {
     return `${(cents / 100).toFixed(2)} ${currency.toUpperCase()}`;
   }
+}
+
+function WaitlistButton({
+  slug,
+  ticketId,
+  alreadyOn,
+}: {
+  slug: string;
+  ticketId: string;
+  alreadyOn: boolean;
+}) {
+  const [state, setState] = useState<"idle" | "loading" | "joined" | "error">(
+    alreadyOn ? "joined" : "idle",
+  );
+  const [position, setPosition] = useState<number | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function join(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setState("loading");
+    setErr(null);
+    const res = await fetch(`/api/e/${slug}/tickets/waitlist`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ticketTypeId: ticketId }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setState("error");
+      setErr(data.error ?? "Could not join waitlist");
+      return;
+    }
+    setState("joined");
+    setPosition(data.position ?? null);
+  }
+
+  if (state === "joined") {
+    return (
+      <span className="text-xs font-medium text-emerald-700">
+        On waitlist{position ? ` (#${position})` : ""} — we'll email you
+      </span>
+    );
+  }
+  return (
+    <>
+      <button
+        onClick={join}
+        disabled={state === "loading"}
+        className="text-xs font-medium text-brand-700 hover:underline disabled:opacity-50"
+      >
+        {state === "loading" ? "Joining…" : "Join waitlist"}
+      </button>
+      {err ? <span className="text-xs text-red-600">{err}</span> : null}
+    </>
+  );
 }

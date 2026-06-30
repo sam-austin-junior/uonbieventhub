@@ -123,6 +123,11 @@ model User {
   pollVotes             PollVote[]
   questionsAsked        Question[]
   questionUpvotes       QuestionUpvote[]
+  exhibitorMemberships  ExhibitorMember[]
+  capturedAsLead        Lead[]                @relation("LeadAttendee")
+  capturedLeads         Lead[]                @relation("LeadCapturer")
+  pushSubscriptions     PushSubscription[]
+  waitlistEntries       WaitlistEntry[]
 }
 
 model Event {
@@ -162,6 +167,7 @@ model Event {
   payments      Payment[]
   polls         Poll[]
   questions     Question[]
+  waitlist      WaitlistEntry[]
 }
 
 model SlugAlias {
@@ -186,6 +192,8 @@ model Session {
   format      SessionFormat @default(IN_PERSON)
   capacity    Int?
   videoUrl    String?
+  slidesUrl   String?
+  notesUrl    String?
   isFeatured  Boolean       @default(false)
   track       String?
   createdAt   DateTime      @default(now())
@@ -284,6 +292,7 @@ model Speaker {
   eventId      String
   userId       String? @unique
   name         String
+  email        String?
   jobTitle     String?
   organization String?
   bio          String?
@@ -295,6 +304,8 @@ model Speaker {
   event    Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
   user     User?            @relation(fields: [userId], references: [id])
   sessions SessionSpeaker[]
+
+  @@index([eventId, email])
 }
 
 model SessionSpeaker {
@@ -346,10 +357,11 @@ model TicketType {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  event         Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event         Event           @relation(fields: [eventId], references: [id], onDelete: Cascade)
   registrations Registration[]
   payments      Payment[]
   promoCodes    PromoCode[]
+  waitlist      WaitlistEntry[]
 
   @@index([eventId, active, sortOrder])
 }
@@ -402,7 +414,40 @@ model Exhibitor {
   boothNumber String?
   category    String?
 
-  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event   Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  members ExhibitorMember[]
+  leads   Lead[]
+}
+
+model ExhibitorMember {
+  id          String   @id @default(cuid())
+  exhibitorId String
+  userId      String
+  isOwner     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  exhibitor Exhibitor @relation(fields: [exhibitorId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([exhibitorId, userId])
+  @@index([userId])
+}
+
+model Lead {
+  id           String   @id @default(cuid())
+  exhibitorId  String
+  userId       String
+  capturedById String
+  notes        String?
+  qualified    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  exhibitor  Exhibitor @relation(fields: [exhibitorId], references: [id], onDelete: Cascade)
+  user       User      @relation("LeadAttendee", fields: [userId], references: [id], onDelete: Cascade)
+  capturedBy User      @relation("LeadCapturer", fields: [capturedById], references: [id], onDelete: Cascade)
+
+  @@unique([exhibitorId, userId])
+  @@index([exhibitorId, createdAt])
 }
 
 model CustomPage {
@@ -666,4 +711,37 @@ model Plan {
   payments Payment[]
 
   @@index([active, sortOrder])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model WaitlistEntry {
+  id           String    @id @default(cuid())
+  eventId      String
+  ticketTypeId String
+  userId       String
+  position     Int
+  status       String    @default("waiting")
+  notifiedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  event      Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  ticketType TicketType @relation(fields: [ticketTypeId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([ticketTypeId, userId])
+  @@index([ticketTypeId, status, position])
+  @@index([eventId])
 }

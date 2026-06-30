@@ -34,6 +34,11 @@ export default async function TicketsPage({
     where: { eventId: event.id, active: true },
     orderBy: [{ sortOrder: "asc" }, { priceCents: "asc" }],
   });
+  const myWaitlist = await prisma.waitlistEntry.findMany({
+    where: { userId: session.userId, ticketTypeId: { in: tickets.map((t) => t.id) } },
+    select: { ticketTypeId: true },
+  });
+  const onWaitlist = new Set(myWaitlist.map((w) => w.ticketTypeId));
 
   const view = tickets.map((t) => {
     const av = checkTicketAvailability(t);
@@ -46,6 +51,7 @@ export default async function TicketsPage({
       remaining: av.remaining,
       available: av.available,
       unavailableReason: av.reason ?? null,
+      alreadyOnWaitlist: onWaitlist.has(t.id),
     };
   });
 

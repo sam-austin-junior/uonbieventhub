@@ -5,7 +5,7 @@ import { getSession } from "@/lib/auth";
 import { getEventBySlug } from "@/lib/event";
 import { formatDate, formatTime } from "@/lib/utils";
 import { Avatar } from "@/components/ui/Avatar";
-import { Calendar, MapPin, Users, ArrowLeft, Clock, Video } from "lucide-react";
+import { Calendar, MapPin, Users, ArrowLeft, Clock, Video, Presentation, FileText } from "lucide-react";
 import { SessionRegisterButton } from "./RegisterButton";
 import { SessionEngagement } from "./SessionEngagement";
 
@@ -78,6 +78,38 @@ export default async function SessionDetailPage({
                 {s.description}
               </p>
             </div>
+
+            {s.slidesUrl || s.notesUrl ? (
+              <div className="mt-8">
+                <h2 className="text-xs uppercase tracking-[0.2em] text-brand-700 font-semibold mb-3">
+                  Materials
+                </h2>
+                <div className="flex flex-wrap gap-3">
+                  {s.slidesUrl ? (
+                    <a
+                      href={s.slidesUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-lg ring-1 ring-ink-200 hover:ring-ink-400 bg-white px-4 py-2.5 text-sm font-medium text-ink-900 transition"
+                    >
+                      <Presentation className="h-4 w-4 text-brand-700" />
+                      Slides
+                    </a>
+                  ) : null}
+                  {s.notesUrl ? (
+                    <a
+                      href={s.notesUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-lg ring-1 ring-ink-200 hover:ring-ink-400 bg-white px-4 py-2.5 text-sm font-medium text-ink-900 transition"
+                    >
+                      <FileText className="h-4 w-4 text-brand-700" />
+                      Notes / handout
+                    </a>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
 
             {session ? <SessionEngagement sessionId={s.id} /> : null}
 

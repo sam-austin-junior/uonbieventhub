@@ -17,6 +17,7 @@ const PUBLIC_EXACT = [
   "/manifest.webmanifest",
   "/sitemap.xml",
   "/robots.txt",
+  "/sw.js",
 ];
 
 const PUBLIC_PREFIX = [

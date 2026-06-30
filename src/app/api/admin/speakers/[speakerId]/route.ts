@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth";
 
 const schema = z.object({
   name: z.string().min(2).optional(),
+  email: z.string().email().optional().nullable().or(z.literal("")),
   jobTitle: z.string().optional().nullable(),
   organization: z.string().optional().nullable(),
   bio: z.string().optional().nullable(),
@@ -29,6 +30,7 @@ export async function PATCH(req: Request, { params }: { params: { speakerId: str
   if (data.photoUrl === "") data.photoUrl = null;
   if (data.linkedinUrl === "") data.linkedinUrl = null;
   if (data.twitterUrl === "") data.twitterUrl = null;
+  if (typeof data.email === "string") data.email = data.email ? data.email.toLowerCase() : null;
   const speaker = await prisma.speaker.update({ where: { id: params.speakerId }, data });
   return NextResponse.json({ speaker });
 }

@@ -6,6 +6,7 @@ import { getEventBySlug, checkEventAvailability } from "@/lib/event";
 import { EventTopNav } from "@/components/event/EventTopNav";
 import { EventUnavailable } from "@/components/event/EventUnavailable";
 import { Avatar } from "@/components/ui/Avatar";
+import { PwaInstaller } from "@/components/PwaInstaller";
 import { ArrowRight } from "lucide-react";
 
 export default async function EventHubLayout({
@@ -81,6 +82,7 @@ export default async function EventHubLayout({
         unreadNotifications={unreadNotifications}
       />
       <main className="flex-1 min-w-0">{children}</main>
+      <PwaInstaller vapidPublicKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null} />
     </div>
   );
 }

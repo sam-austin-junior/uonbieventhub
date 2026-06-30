@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireStaff, assertOwnsEvent } from "@/lib/admin-scope";
 import { writeAudit } from "@/lib/audit";
+import { notifyWaitlistOpenings } from "@/lib/waitlist";
 
 export const runtime = "nodejs";
 
@@ -64,6 +65,15 @@ export async function PATCH(
     targetId: ticket.id,
     summary: `Updated ticket "${updated.name}"`,
   });
+
+  // If capacity grew (or was lifted entirely) we may have freed seats —
+  // notify the next people on the waitlist.
+  const oldRoom = ticket.capacity === null ? Infinity : Math.max(0, ticket.capacity - ticket.soldCount);
+  const newRoom = updated.capacity === null ? Infinity : Math.max(0, updated.capacity - updated.soldCount);
+  if (newRoom > oldRoom) {
+    const delta = newRoom === Infinity ? 50 : newRoom - oldRoom;
+    notifyWaitlistOpenings(ticket.id, delta).catch(() => {});
+  }
 
   return NextResponse.json({ ticket: updated });
 }

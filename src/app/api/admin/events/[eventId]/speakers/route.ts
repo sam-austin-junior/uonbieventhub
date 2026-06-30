@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth";
 
 const schema = z.object({
   name: z.string().min(2),
+  email: z.string().email().optional().nullable().or(z.literal("")),
   jobTitle: z.string().optional().nullable(),
   organization: z.string().optional().nullable(),
   bio: z.string().optional().nullable(),
@@ -27,6 +28,7 @@ export async function POST(req: Request, { params }: { params: { eventId: string
     data: {
       eventId: params.eventId,
       name: data.name,
+      email: data.email ? data.email.toLowerCase() : null,
       jobTitle: data.jobTitle || null,
       organization: data.organization || null,
       bio: data.bio || null,

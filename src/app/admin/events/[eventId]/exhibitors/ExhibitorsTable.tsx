@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Modal, ConfirmDialog } from "@/components/ui/Modal";
 import { FileUpload } from "@/components/ui/FileUpload";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import Link from "next/link";
+import { Pencil, Trash2, Plus, Users } from "lucide-react";
 
 type Row = {
   id: string;
@@ -129,6 +130,14 @@ export function ExhibitorsTable({ eventId, rows }: { eventId: string; rows: Row[
                 </td>
                 <td className="px-5 py-3 text-right">
                   <div className="inline-flex gap-1">
+                    <Link
+                      href={`/admin/events/${eventId}/exhibitors/${e.id}/staff`}
+                      className="p-1.5 rounded hover:bg-brand-50 text-brand-700"
+                      aria-label="Booth staff"
+                      title="Manage booth staff & view leads"
+                    >
+                      <Users className="h-4 w-4" />
+                    </Link>
                     <button
                       onClick={() => setEditing({ ...e })}
                       className="p-1.5 rounded hover:bg-brand-50 text-brand-700"
