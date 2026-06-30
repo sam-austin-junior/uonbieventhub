@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getEventBySlug } from "@/lib/event";
+import { parseBlocks } from "@/lib/blocks";
+import { PageRenderer } from "@/components/page-builder/PageRenderer";
 
 export default async function CustomPageView({
   params,
@@ -12,8 +14,27 @@ export default async function CustomPageView({
   const page = await prisma.customPage.findUnique({ where: { id: params.pageId } });
   if (!page || page.eventId !== event.id) notFound();
 
-  const paragraphs = page.body.split(/\n\n+/);
+  const blocks = parseBlocks(page.blocks);
 
+  // If the organiser has built this page with the block editor, render
+  // through the block renderer. Otherwise fall back to the legacy
+  // body-as-paragraphs view so old pages keep working.
+  if (blocks && blocks.length > 0) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        <h1 className="text-2xl font-bold text-ink-900 mb-6 sr-only">
+          {page.title}
+        </h1>
+        <PageRenderer
+          blocks={blocks}
+          eventId={event.id}
+          eventSlug={event.slug}
+        />
+      </div>
+    );
+  }
+
+  const paragraphs = page.body.split(/\n\n+/);
   return (
     <div className="max-w-3xl mx-auto px-6 py-8">
       <h1 className="text-2xl font-bold text-ink-900 mb-4">{page.title}</h1>

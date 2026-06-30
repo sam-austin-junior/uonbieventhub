@@ -467,6 +467,7 @@ model CustomPage {
   slug      String
   title     String
   body      String
+  blocks    String?
   order     Int     @default(0)
   showInNav Boolean @default(true)
 
