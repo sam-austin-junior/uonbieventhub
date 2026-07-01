@@ -14,40 +14,62 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
-  const challenge = await readTotpChallengeCookie();
-  if (!challenge) {
+  try {
+    const challenge = await readTotpChallengeCookie();
+    if (!challenge) {
+      return NextResponse.json(
+        { error: "Your verification step expired. Sign in again." },
+        { status: 401 },
+      );
+    }
+
+    const json = await req.json().catch(() => null);
+    const parsed = schema.safeParse(json);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Enter the 6-digit code" }, { status: 400 });
+    }
+
+    // Explicit select — same rationale as /api/auth/login. Keeps this route
+    // resilient to Prisma-schema-vs-DB drift.
+    const user = await prisma.user.findUnique({
+      where: { id: challenge.userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        totpSecret: true,
+      },
+    });
+    if (!user || !user.totpSecret) {
+      await clearTotpChallengeCookie();
+      return NextResponse.json({ error: "Account not found" }, { status: 404 });
+    }
+
+    const ok = verifyToken(parsed.data.code.replace(/\s+/g, ""), user.totpSecret);
+    if (!ok) {
+      return NextResponse.json({ error: "Wrong code. Try again." }, { status: 401 });
+    }
+
+    await clearTotpChallengeCookie();
+    const token = await createSessionToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      name: user.name,
+    });
+    await setSessionCookie(token);
+    return NextResponse.json({
+      user: { id: user.id, email: user.email, name: user.name, role: user.role },
+    });
+  } catch (err) {
+    console.error("[api/auth/login/totp] crashed:", err);
+    const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json(
-      { error: "Your verification step expired. Sign in again." },
-      { status: 401 }
+      {
+        error: `Verification failed on the server: ${message.slice(0, 300)}`,
+      },
+      { status: 500 },
     );
   }
-
-  const json = await req.json().catch(() => null);
-  const parsed = schema.safeParse(json);
-  if (!parsed.success) {
-    return NextResponse.json({ error: "Enter the 6-digit code" }, { status: 400 });
-  }
-
-  const user = await prisma.user.findUnique({ where: { id: challenge.userId } });
-  if (!user || !user.totpSecret) {
-    await clearTotpChallengeCookie();
-    return NextResponse.json({ error: "Account not found" }, { status: 404 });
-  }
-
-  const ok = verifyToken(parsed.data.code.replace(/\s+/g, ""), user.totpSecret);
-  if (!ok) {
-    return NextResponse.json({ error: "Wrong code. Try again." }, { status: 401 });
-  }
-
-  await clearTotpChallengeCookie();
-  const token = await createSessionToken({
-    userId: user.id,
-    email: user.email,
-    role: user.role,
-    name: user.name,
-  });
-  await setSessionCookie(token);
-  return NextResponse.json({
-    user: { id: user.id, email: user.email, name: user.name, role: user.role },
-  });
 }
