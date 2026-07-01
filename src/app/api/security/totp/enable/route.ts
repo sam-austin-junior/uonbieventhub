@@ -5,7 +5,10 @@ import { getSession } from "@/lib/auth";
 import { verifyToken } from "@/lib/totp";
 import { writeAudit } from "@/lib/audit";
 
-const schema = z.object({ token: z.string().length(6) });
+// Accept 6-10 chars so pastes like "123 456" (7 chars including space)
+// or with a trailing newline pass through — verifyToken strips non-digits
+// before comparison and requires exactly 6 digits after cleaning.
+const schema = z.object({ token: z.string().min(6).max(10) });
 
 export async function POST(req: Request) {
   const session = await getSession();

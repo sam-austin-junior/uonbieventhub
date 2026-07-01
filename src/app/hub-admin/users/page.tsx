@@ -1,10 +1,18 @@
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
 import { Avatar } from "@/components/ui/Avatar";
 import { formatDate } from "@/lib/utils";
+import { Reset2FAButton } from "./Reset2FAButton";
+import { ShieldCheck } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default async function AllUsers() {
+  const session = await getSession();
+  if (!session) redirect("/login?next=/hub-admin/users");
+  const isSuperadmin = session.role === "SUPERADMIN";
+
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
     include: { _count: { select: { registrations: true, organizedEvents: true } } },
@@ -28,6 +36,7 @@ export default async function AllUsers() {
               <th className="px-5 py-3 text-left">Joined</th>
               <th className="px-5 py-3 text-left">Status</th>
               <th className="px-5 py-3 text-right">Events</th>
+              <th className="px-5 py-3 text-right w-16">2FA</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
@@ -57,6 +66,28 @@ export default async function AllUsers() {
                 </td>
                 <td className="px-5 py-3 text-right">
                   {u.role === "ORGANIZER" ? u._count.organizedEvents : u._count.registrations}
+                </td>
+                <td className="px-3 py-3 text-right">
+                  {u.totpEnabledAt ? (
+                    <span className="inline-flex items-center gap-1 justify-end" title="2FA enabled">
+                      <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+                      {isSuperadmin ? (
+                        <Reset2FAButton userId={u.id} userEmail={u.email} enabled={true} />
+                      ) : null}
+                    </span>
+                  ) : u.totpSecret ? (
+                    <span
+                      className="inline-flex items-center gap-1 justify-end"
+                      title="2FA enrollment started but not completed"
+                    >
+                      <span className="text-xs text-amber-600">Pending</span>
+                      {isSuperadmin ? (
+                        <Reset2FAButton userId={u.id} userEmail={u.email} enabled={false} />
+                      ) : null}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-ink-300">—</span>
+                  )}
                 </td>
               </tr>
             ))}
