@@ -12,6 +12,7 @@ const PUBLIC_EXACT = [
   "/forgot",
   "/reset",
   "/api/auth/login",
+  "/api/auth/login/totp",
   "/api/auth/forgot",
   "/api/auth/reset",
   "/api/locale",
