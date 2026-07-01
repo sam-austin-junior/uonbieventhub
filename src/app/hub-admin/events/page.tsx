@@ -7,9 +7,16 @@ import { DeleteEventButton } from "./DeleteEventButton";
 export const dynamic = "force-dynamic";
 
 export default async function AllEvents() {
+  // Explicit select — only pull the columns the table renders. Resilient
+  // to Prisma-vs-DB schema drift on Event.
   const events = await prisma.event.findMany({
     orderBy: { startDate: "asc" },
-    include: {
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      startDate: true,
+      attendeeMode: true,
       organizer: { select: { name: true, email: true } },
       _count: { select: { sessions: true, registrations: true } },
     },

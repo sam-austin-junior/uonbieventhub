@@ -7,20 +7,32 @@ import { sendEmail, emailTemplate, appUrl, isEmailConfigured } from "@/lib/email
 const schema = z.object({ email: z.string().email() });
 
 export async function POST(req: Request) {
-  const json = await req.json().catch(() => null);
-  const parsed = schema.safeParse(json);
-  if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
-  const lower = parsed.data.email.toLowerCase();
+  try {
+    const json = await req.json().catch(() => null);
+    const parsed = schema.safeParse(json);
+    if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+    const lower = parsed.data.email.toLowerCase();
 
-  const user = await prisma.user.findUnique({ where: { email: lower } });
+    // Explicit select — resilient to Prisma-schema-vs-DB drift on the
+    // User table (see /api/auth/login for context).
+    const user = await prisma.user.findUnique({
+      where: { email: lower },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        passwordHash: true,
+      },
+    });
 
-  // Always succeed (don't leak whether the email exists)
-  if (!user || !user.passwordHash) {
-    return NextResponse.json({ ok: true });
-  }
-  if (user.role === "ATTENDEE") {
-    return NextResponse.json({ ok: true });
-  }
+    // Always succeed (don't leak whether the email exists)
+    if (!user || !user.passwordHash) {
+      return NextResponse.json({ ok: true });
+    }
+    if (user.role === "ATTENDEE") {
+      return NextResponse.json({ ok: true });
+    }
 
   const token = crypto.randomBytes(32).toString("base64url");
   const expires = new Date(Date.now() + 60 * 60 * 1000);
@@ -48,7 +60,13 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("[api/auth/forgot] crashed:", err);
+    // Silent success — same as the "email not found" path — so we never
+    // leak whether an address exists in the DB even on infra errors.
+    return NextResponse.json({ ok: true });
+  }
 }
 
 function escape(s: string) {

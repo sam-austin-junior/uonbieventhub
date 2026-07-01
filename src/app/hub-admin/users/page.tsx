@@ -13,9 +13,22 @@ export default async function AllUsers() {
   if (!session) redirect("/login?next=/hub-admin/users");
   const isSuperadmin = session.role === "SUPERADMIN";
 
+  // Explicit select — resilient to Prisma-vs-DB drift on User (which grows
+  // new fields nearly every sprint). Only pulls what the table renders.
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
-    include: { _count: { select: { registrations: true, organizedEvents: true } } },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      avatarUrl: true,
+      createdAt: true,
+      activatedAt: true,
+      totpSecret: true,
+      totpEnabledAt: true,
+      _count: { select: { registrations: true, organizedEvents: true } },
+    },
   });
 
   return (

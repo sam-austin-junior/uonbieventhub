@@ -13,6 +13,9 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function HubAdminOverview() {
+  // Explicit selects everywhere — this is the first page a superadmin
+  // lands on after login, so any Prisma-vs-DB drift takes the whole
+  // hub down. Same rationale as /api/auth/login.
   const [organizerCount, eventCount, attendeeCount, totalUsers, recentEvents, recentOrgs] =
     await Promise.all([
       prisma.user.count({ where: { role: "ORGANIZER" } }),
@@ -22,7 +25,11 @@ export default async function HubAdminOverview() {
       prisma.event.findMany({
         orderBy: { createdAt: "desc" },
         take: 5,
-        include: {
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          startDate: true,
           organizer: { select: { name: true } },
           _count: { select: { sessions: true, registrations: true } },
         },
@@ -31,7 +38,13 @@ export default async function HubAdminOverview() {
         where: { role: "ORGANIZER" },
         orderBy: { createdAt: "desc" },
         take: 5,
-        include: { _count: { select: { organizedEvents: true } } },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          activatedAt: true,
+          _count: { select: { organizedEvents: true } },
+        },
       }),
     ]);
 
